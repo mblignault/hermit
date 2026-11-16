@@ -1,12 +1,13 @@
 {
   "version": 1,
-  "title": "Our home hunt",
+  "title": "",
   "mode": "rent",
   "country": "",
   "currency": "",
   "locale": "",
+  "units": "metric",
   "household": {
-    "people": [{ "id": "p1", "name": "" }],
+    "people": [{ "id": "a", "name": "" }],
     "pets": []
   },
   "budget": { "ideal": null, "max": null },
@@ -26,7 +27,7 @@
     "entertain": "nice",
     "features": {}
   },
-  "weights": { "location": 20, "price": 15, "pets": 10, "outdoor": 10, "entertain": 10, "layout": 13, "type": 8, "nearby": 6, "timing": 5, "features": 3 },
+  "weights": { "location": 20, "price": 18, "pets": 10, "outdoor": 10, "entertain": 5, "layout": 15, "type": 8, "nearby": 6, "timing": 5, "features": 3 },
   "bands": { "strong": 85, "good": 72, "maybe": 58 },
   "calibration": { "liked": [], "disliked": [], "notes": "" }
 }

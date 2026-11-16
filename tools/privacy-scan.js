@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 // Blocks personal data from reaching a public repo.
 // 1. Generic patterns (emails, phone numbers, national ID-like numbers, real-portal listing URLs, coordinates).
-// 2. Your own denylist: one term per line in .privacy-denylist (gitignored) or $PRIVACY_DENYLIST (comma-separated).
+// 2. Your own denylist, kept OUTSIDE the repo so it can never be committed or zipped by accident:
+//    one term per line in ~/.config/home-hunt/privacy-denylist (or the file in $PRIVACY_DENYLIST_FILE),
+//    plus $PRIVACY_DENYLIST (comma-separated).
 //    Put names, street names, suburbs, employers, pet names and listing numbers from your own hunt in it.
 // Usage: node tools/privacy-scan.js [files...]   (default: every file git would commit)
 "use strict";
-const fs = require("fs"), path = require("path"), { execSync } = require("child_process");
+const fs = require("fs"), path = require("path"), os = require("os"), { execSync } = require("child_process");
 const root = path.resolve(__dirname, "..");
 const ALLOW = [/noreply@/i, /@example\.(com|org|net)/i, /users\.noreply\.github\.com/i];
 const PATTERNS = [
@@ -22,7 +24,8 @@ if (!files.length) {
 }
 files = files.filter(f => !/^tools\/privacy-scan\.js$|\.png$|\.jpe?g$|\.gif$|\.ico$|\.pdf$/i.test(f));
 const deny = [
-  ...(fs.existsSync(path.join(root, ".privacy-denylist")) ? fs.readFileSync(path.join(root, ".privacy-denylist"), "utf8").split("\n") : []),
+  ...[process.env.PRIVACY_DENYLIST_FILE || path.join(os.homedir(), ".config", "home-hunt", "privacy-denylist"), path.join(root, ".privacy-denylist")]
+    .flatMap(f => fs.existsSync(f) ? fs.readFileSync(f, "utf8").split("\n") : []),
   ...(process.env.PRIVACY_DENYLIST || "").split(","),
 ].map(s => s.trim()).filter(s => s && !s.startsWith("#"));
 const hits = [];

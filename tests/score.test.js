@@ -2,8 +2,8 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const path = require("path");
 const { scoreListing, dupLikelihood, monthlyRepayment } = require("../skills/home-hunt/scripts/score.js");
-const profile = require("../examples/demo/profile.json");
-const { listings } = require("../examples/demo/listings.json");
+const profile = require("../skills/home-hunt/examples/demo/profile.json");
+const { listings } = require("../skills/home-hunt/examples/demo/listings.json");
 const TODAY = { today: "2027-02-01" };
 const byId = id => listings.find(l => l.id === id);
 const s = (l, p = profile) => scoreListing(l, p, TODAY);
@@ -60,7 +60,7 @@ test("zones: outside is a gate, unconfirmed costs a little and asks, inside is f
 });
 
 test("valueMax caps fringe areas at maybe", () => {
-  const l = { id: "v", area: "Hillcrest", price: 2300, beds: 3, baths: 2, type: "house_in_estate", facts: { pets: "yes", outdoor: "large", entertain: "covered_patio_bbq", subArea: "near", available: "2027-03-01", nearby: { local: 0.5 }, features: { backupPower: true, fibre: true, security: true } } };
+  const l = { id: "v", area: "Hillcrest", price: 2300, beds: 3, baths: 2, type: "gated_house", facts: { pets: "yes", outdoor: "large", entertain: "covered_patio_bbq", subArea: "near", available: "2027-03-01", nearby: { local: 0.5 }, features: { backupPower: true, fibre: true, security: true } } };
   const r = s(l);
   assert.ok(r.score <= profile.bands.good - 1, `score ${r.score}`);
 });

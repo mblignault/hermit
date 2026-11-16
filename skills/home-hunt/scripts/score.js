@@ -17,12 +17,16 @@
 const RUBRIC_VERSION = "1.0";
 
 const DEFAULT_WEIGHTS = {
-  location: 20, price: 15, pets: 10, outdoor: 10, entertain: 10,
-  layout: 13, type: 8, nearby: 6, timing: 5, features: 3,
+  location: 20, price: 18, pets: 10, outdoor: 10, entertain: 5,
+  layout: 15, type: 8, nearby: 6, timing: 5, features: 3,
 };
 const DEFAULT_BANDS = { strong: 85, good: 72, maybe: 58 };
 const GATED_MAX = 39;
 const ROAD_FACTOR = 1.3; // straight-line km to rough road km
+// Data is always metric (km, m²). profile.units = "imperial" only changes what people read.
+const imperial = p => p?.units === "imperial";
+const fmtDist = (km, p, dp = 1) => imperial(p) ? `${(km / 1.609344).toFixed(dp)} mi` : `${km.toFixed(dp)} km`;
+const fmtSize = (m2, p) => imperial(p) ? `${Math.round(m2 * 10.7639).toLocaleString("en-US")} sq ft` : `${m2} m²`;
 
 const LEVELS = {
   pets: { yes: 1, permission: 0.8, likely: 0.5, unknown: 0.3, small_only: 0, cats_only: 0, no: 0 },
@@ -121,10 +125,10 @@ function partLocation(l, p, ctx) {
       const km = given ?? haversineKm(ll, [Number(a.lat), Number(a.lng)]) * ROAD_FACTOR;
       const ideal = num(a.idealKm) ?? 5, max = num(a.maxKm) ?? ideal * 3;
       const fr = km <= ideal ? 1 : km >= max ? 0 : lerp(km, ideal, max, 1, 0);
-      if (km > max && a.hard) ctx.gate(`${a.label}: about ${km.toFixed(0)} km, over your ${max} km limit`);
+      if (km > max && a.hard) ctx.gate(`${a.label}: about ${fmtDist(km, p, 0)}, over your ${fmtDist(max, p, 0)} limit`);
       const w = num(a.weight) ?? 1;
       acc += fr * w; wsum += w;
-      ctx.info(`${a.label} ~${km.toFixed(1)} km${given == null ? " (est.)" : ""}`);
+      ctx.info(`${a.label} ~${fmtDist(km, p)}${given == null ? " (est.)" : ""}`);
     }
     commuteFrac = wsum ? acc / wsum : null;
   } else if (anchors.length && !ll) {
@@ -224,7 +228,7 @@ function partLayout(l, p, ctx) {
     ctx.flag(`Only ${baths} bathroom${baths === 1 ? "" : "s"}`);
     ctx.cap(p.caps?.bathsBelowMin ?? (p.bands?.good ?? DEFAULT_BANDS.good) - 8, `Fewer bathrooms than you need`);
   }
-  if (size != null && sMin != null && size < sMin) ctx.flag(`Small: ${size} m² (you want ${sMin}+)`);
+  if (size != null && sMin != null && size < sMin) ctx.flag(`Small: ${fmtSize(size, p)} (you want ${fmtSize(sMin, p)}+)`);
   if (beds == null) ctx.ask("How many bedrooms?");
   // A bigger place than needed scores a little lower (it usually costs more for space you don't use);
   // set requirements.beds.overOk to score it full.
@@ -239,7 +243,7 @@ function partLayout(l, p, ctx) {
 
 function partType(l, p, ctx) {
   const t = p.requirements?.types || {};
-  const v = norm(l.type);
+  const raw = norm(l.type), v = ({ house_in_estate: "gated_house", "house in estate": "gated_house" })[raw] || raw; // old name
   if (!v || v === "unknown") return { frac: 0.5, known: false };
   if ((t.excluded || []).map(norm).includes(v)) ctx.gate(`${l.type} is excluded`);
   const pref = (t.preferred || []).map(norm), acc = (t.acceptable || []).map(norm);
@@ -258,8 +262,8 @@ function partNearby(l, p, ctx) {
     const ideal = num(n.idealKm) ?? 1, max = num(n.maxKm) ?? ideal * 3;
     if (km == null) { acc += 0.33; ctx.flag(`Check for ${n.label} nearby`); continue; }
     known++;
-    if (km > max) ctx.flag(`No ${n.label} within ${max} km`);
-    else ctx.info(`${n.label}: ${km} km`);
+    if (km > max) ctx.flag(`No ${n.label} within ${fmtDist(max, p)}`);
+    else ctx.info(`${n.label}: ${fmtDist(km, p)}`);
     acc += km <= ideal ? 1 : km >= max ? 0 : lerp(km, ideal, max, 1, 0.33);
   }
   return { frac: acc / list.length, known: known === list.length };
@@ -345,7 +349,7 @@ function scoreListing(listing, profile, opts = {}) {
   score = Math.round(score);
   for (const c of caps) if (score > c.v) { score = c.v; ctx.flag(c.why); }
   if (l.taken) ctx.flag("Marked taken");
-  if (l.verify?.state === "unverified") ctx.flag("Listing page not verified live");
+  if (l.verify?.state === "unverified") ctx.flag("Couldn't re-check the listing page (site error); it may still be available");
   if (gates.length) score = Math.min(score, GATED_MAX);
   const bands = { ...DEFAULT_BANDS, ...(p.bands || {}) };
   const band = gates.length ? "no-fit" : score >= bands.strong ? "strong" : score >= bands.good ? "good" : score >= bands.maybe ? "maybe" : "weak";
@@ -374,6 +378,6 @@ function dupLikelihood(a, b) {
   return Math.min(1, s);
 }
 
-const API = { dupLikelihood, scoreListing, haversineKm, monthlyRepayment, RUBRIC_VERSION, DEFAULT_WEIGHTS, DEFAULT_BANDS, LEVELS, FEATURE_LABELS };
+const API = { dupLikelihood, scoreListing, haversineKm, fmtDist, fmtSize, monthlyRepayment, RUBRIC_VERSION, DEFAULT_WEIGHTS, DEFAULT_BANDS, LEVELS, FEATURE_LABELS };
 if (typeof module !== "undefined" && module.exports) module.exports = API;
 if (typeof window !== "undefined") window.HomeHuntScore = API;

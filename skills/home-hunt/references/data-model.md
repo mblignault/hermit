@@ -4,13 +4,13 @@
 
 ```jsonc
 {
-  "id": "p24-117000000",          // <source idPrefix>-<the site's own listing number>; stable, never reused
-  "source": "Property24",
+  "id": "ep-123456",                    // <source idPrefix>-<the site's own listing number>; stable, never reused
+  "source": "ExamplePortal",
   "url": "https://…",             // the detail page you verified
   "links": [{ "url": "…", "label": "Agency site" }],
   "status": "inbox",              // inbox | contacted | viewing | shortlist | apply | no
   "stage": "new",                 // inbox only: new | deciding | tocontact
-  "taken": false,                 // no longer available (stays in its lane, greyed)
+  "taken": false,                 // no longer available: greyed; moved to "no" only if still in the Inbox
   "dupOf": "",                    // id of the primary card when this is a cross-post
   "verify": { "state": "live", "at": "2027-02-01", "note": "" },   // live | unverified | delisted
 
@@ -18,7 +18,7 @@
   "area": "Riverside",            // as the portal states it
   "address": "12 Willow Lane", "complex": "Willow Mews",
   "lat": 45.505, "lng": 10.03,
-  "type": "townhouse",            // house | house_in_estate | cluster | townhouse | semi | cottage | duplex | apartment | studio | room
+  "type": "townhouse",            // house | gated_house | cluster | townhouse | semi | cottage | duplex | apartment | studio | room
   "beds": 3, "baths": 2, "parking": 2, "sizeM2": 140,
 
   "facts": {                      // what the score is built from; see scoring.md for values
@@ -33,7 +33,7 @@
   "viewingAt": "2027-02-20T10:00",   // local time, no zone
   "ratings": { "a": 4, "b": 3 },     // per household person id, 1-5; 0 = cleared
   "notes": "",
-  "photo": "/photos/p24-117000000.jpg",   // or "/_blob/<assetId>" on the artifact board
+  "photo": "/photos/ep-123456.jpg",   // or "/_blob/<assetId>" on the artifact board
   "photoSrc": "https://…",               // remote image to backfill later
   "createdAt": 0, "updatedAt": 0
 }

@@ -1,87 +1,88 @@
 # Setup: first run
 
-Goal: in about 10 minutes of their time, get a profile that scores listings the way their gut does, sources you've proven you can read, a scout on a schedule, and a board they like looking at.
+Goal: listings on their board as fast as possible, scored well enough to trust, then sharpened over time. **Quick start is the default.** It takes about 5 minutes and two rounds of questions. Everything in "Refine" is optional and can happen any time with `settings`.
 
-Run `hh.js init` first. It creates the workspace without overwriting anything. If a profile already exists, ask whether to **edit** it (go to `settings`) or **start over** (`reset`, which backs up first).
+Before asking anything:
+1. **Find an existing hunt.** Check memory, then `$HOME_HUNT_DIR`, then `./home-hunt` and `~/home-hunt` (`hh.js status` exits 2 when there's none). If one exists, ask whether to **edit** it (`settings`) or **start over** (`reset`). If none is found but they talk as if they have one, ask where it is before creating a new one.
+2. **Check Node** with `node --version` (18+). Without it, follow SKILL.md "Requirements and fallbacks".
+3. `hh.js init` creates the workspace (default `~/home-hunt`) without overwriting anything.
+
+Open with one line that sets expectations:
+> "Setup has 4 short parts: basics, what matters, sites, schedule. About 5 minutes. Say **skip** or **defaults** at any point."
 
 Rules for the interview:
-- **Batch the questions.** Ask 3–5 related questions per message, and offer defaults so they can answer "yes, defaults". Never ask one question per message.
-- **Use the host's question UI** if it has one (multiple-choice cards). Otherwise use a short numbered list.
-- **Reflect back** what you understood after each block, in one or two lines, and write it to `profile.json` straight away. A half-finished setup should still be usable.
-- **Don't guess money, dates or deal-breakers.** Ask. Infer the rest (currency, units, locale) and tell them what you inferred.
+- **Batch the questions.** 3–5 per message, each with a default. Prefix each round with its part, e.g. "(2/4) What matters".
+- **Use the host's question UI** if it has one (multiple-choice cards). Otherwise a short numbered list.
+- **Everything is skippable.** "skip" takes the default and moves on. Never block on anything except mode, place and budget.
+- **Reflect back** in one or two lines after each round, and write to `profile.json` straight away. A half-finished setup still works.
+- **Don't guess money, dates or deal-breakers.** Ask. Infer the rest (country, currency, units, locale) and say what you inferred.
+- **Plain words.** Say "places you travel to", "how much you like each area", "deal-breakers", "score level". The internal names (anchors, tiers, zones, gates, bands) are for the files, not the conversation.
 
-## 1. Basics
+## Quick start
 
-Ask together:
+### (1/4) Basics, one message
+
 1. Renting or buying? (`mode`)
-2. Who's moving? Names or initials of the people who'll rate places. Any pets? Get kind, size and how many. Size matters: "small pets only" listings exclude medium dogs.
-3. Where, roughly? A city or region. Use it for the country, currency, locale and units (read `countries/<code>.json`, the ISO 3166 alpha-2 code in lower case). Confirm in one line: "South Africa: prices in ZAR, sizes in m². Right?"
-4. When? The earliest move-in date, the ideal latest, and a hard latest after which a place is useless (`moveIn.earliest`, `latest`, `hardLatest`).
+2. Where, roughly? A city or region. Infer the country (`countries/<code>.json`, ISO 3166 alpha-2 in lower case), currency, locale and units, and confirm in one line: "United Kingdom: rent per month in GBP, sizes in sq ft. Right?" Set `units: "imperial"` where people think in miles and square feet (US, UK for distance); data is always stored metric, so convert what they tell you. Name the board from the place and mode ("Bristol Rental Hunt") in `title`; they can rename it.
+3. Budget.
+   - **Rent:** a comfortable figure and an absolute max (`budget.ideal`, `budget.max`). Check the pack's `rentPeriod`: Australia and New Zealand quote rent **per week**. Store what the portals use and say so.
+   - **Buy:** target and max price. The finance details (deposit, rate, term, income) can wait for Refine; see `buying.md`.
+   - Not sure what they can afford? Offer a 2-minute check using the pack's `affordability` rule (and `buying.md` for buyers), then recommend an ideal and a max.
+4. When could you move, and when must you be in by? Set `moveIn.earliest` and `hardLatest`, and infer `latest` (ideal) as a couple of weeks before the hard date.
+5. Who's moving, and any pets? Names or initials of the people who'll rate places (`household.people`, ids are lower-case initials). Pets: kind, size and how many. Size matters: "small pets only" excludes medium dogs.
 
-Budget, same message or the next:
-- **Rent:** the comfortable monthly figure (`budget.ideal`) and the absolute max (`budget.max`). Check the country pack's `rentPeriod`. In Australia and New Zealand rent is quoted **per week**, so store whatever the portals use and say so.
-- **Buy:** the target price and max price, deposit, interest rate, loan term, and monthly take-home income (`finance.*`). Read `references/buying.md`.
-- If they don't know what they can afford, offer a 2-minute affordability check. Use the pack's `affordability` rule of thumb, and for buying, the repayment formula in `buying.md`. Recommend an ideal and a max, and let them choose.
+### (2/4) What matters, one message
 
-## 2. What matters: places and the home
+1. **Places you travel to often:** work, school, family. Address or place name, and roughly how far is fine. Geocode each (`sources.md` §5) into `anchors` with `idealKm`, `maxKm` (road km), `weight: 2` for daily and `1` for weekly.
+2. **Areas you like, and any you'd never live in.** Tier the liked ones yourself from the travel places (1 best … 5 short trip but not loved) and show the result for a quick yes. Never-areas go in `excludeAreas`; ask why, because the reason often rules out the neighbours too.
+3. **Must-haves and deal-breakers, in their own words.** "3 bedrooms, a garden for the dogs, no apartments." Translate into `requirements` (beds, baths, types, outdoor, entertain, features as `must`/`nice`/`avoid`). Anything not mentioned keeps its default.
 
-**Places they travel to (anchors).** Work, school, family, gym. For each, get the address or place name, how often they go, and what distance or time is "fine" versus "too far". Geocode each one (see `sources.md` §5) to `lat`/`lng` and set `idealKm` and `maxKm` as road km. A daily trip gets `weight: 2`, a weekly one `weight: 1`. If a limit is truly hard ("never more than 25 km"), set `hard: true`.
+### (3/4) Sites
 
-**Areas.** Ask which neighbourhoods they like and which they'd never live in. Then tier them yourself from the anchors, and show the tiers for a quick yes:
-- Tier 1: best for everyone's trips. Tier 2: good. Tier 3: fine. Tier 4: fringe. Tier 5: short trip but not loved.
-- `excludeAreas` is a hard no. Ask why: the reason often reveals a whole side of town ("the traffic on that side"), so add its neighbours too.
-- **Half-liked areas.** When they say "only the part near X", make a zone: `{label, center:[lat,lng], radiusKm}` or `bbox`. A listing geocoded outside the zone is gated. An ungeocoded one loses a little and gets a question for the agent.
-- **"Only if it's great value".** Set `valueMax` on that area. Above it, location points drop and the score can't rise above the maybe band.
-- Ask what they'd like within walking distance: a pub, a café, a park, a gym, the school gate (`nearby`, with `idealKm` and `maxKm` in walking km). Skip anything they don't care about.
+Follow `sources.md` §1–3: propose sites from the country pack plus anything they already use, test each live, and show a short table (site, what I can do, anything I need from you). Get approval for anything that touches their machine or inbox. Save to `sources.json`.
 
-**The home.** Ask together, offering checkbox-style answers:
-- Property types they want, would accept, and won't consider (`requirements.types`). Use these keys: house, house_in_estate, cluster, townhouse, semi, cottage, duplex, apartment, studio, room.
-- Bedrooms and bathrooms, minimum and ideal. Size in m², or sqft converted to m² (`sizeM2.min` and `ideal`).
-- Outdoor space and entertaining: `must`, `nice` or `ignore`.
-- Features, each `must`, `nice`, `avoid` or left out: backupPower, fibre, security, parking2, pool, study, furnished, aircon, lift, laundry, storage, ev, solar, schoolZone.
+Never present an untested site as working. **If no site is readable**, say so plainly and don't schedule a scout that can't read anything:
+> "I can't read any of these sites from here. Options: run me on your own computer, let me use your browser, forward me the portals' email alerts, or paste listings in and I'll do the rest."
 
-## 3. Weights and calibration
+### (4/4) Schedule and board
 
-This step is what makes the scores feel right. Don't skip it.
+1. Ask how often (daily for a hot rental market, 2–3 times a week for buying) and what time. Set it up (see "Scheduling" below).
+2. Run the **first scout now** (`scout.md`), so the board isn't empty.
+3. Build the board (`board.md`) and give the link or path.
 
-1. **Rank.** Show the default weights as a short table (location 20, price 15, pets 10, outdoor 10, entertaining 10, layout 13, type 8, nearby 6, timing 5, features 3). Ask them to move points between what matters most and least. Parts that don't apply, such as pets with no pets, give their weight to the rest automatically.
-2. **Calibrate.** Ask for 2–3 listings they **love** and 1–2 they'd **reject**, as links, pastes or screenshots. Read each (`scout.md` step 4), add them to the workspace with `status: "shortlist"` or `"no"`, and run `hh.js score --explain`.
-   - Loved listings should land at 80 or more. Rejected ones should be gated or under 58.
-   - If a loved one scores low, find which part pulled it down and ask why they love it anyway. That's usually a missing weight or a wrong tier.
-   - If a rejected one scores high, ask what's wrong with it. That's usually a missing gate, which belongs in `excludeAreas`, a zone, `must` or `types.excluded`.
-   - Change the profile, re-score and show the before and after in one line each. Stop when the order matches their gut. Save the ids in `profile.calibration`.
-3. Tell them the bands: 85+ strong, 72–84 good, 58–71 maybe, under 58 weak, and a gate means no-fit.
+### Wrap up, one message
 
-## 4. Sources
+- What's set up: the profile in one line, the sites and how each is read, the schedule, and the board link.
+- **What happens next:** "Every <cadence> at <time> I check the sites. New listings that pass your deal-breakers land in the board's Inbox, and you get a short summary <where: this chat / the project / scout.log>. Quiet days get one line, so you know it ran."
+- Three things to try: open a card and fix a fact (the score updates), say `questions` for what to ask agents, say `settings calibrate` once you've starred a few.
+- If the host has memory, save the workspace path, board URL and schedule id so later sessions find the hunt without asking.
 
-Follow `references/sources.md` §1–3:
-1. Load `countries/<code>.json`. Propose the primary portals and the main agencies for their areas, and ask for any site they already use.
-2. Test each site live with a real search page for one of their areas. Classify it as `fetch`, `browser`, `alerts`, `manual` or `blocked`.
-3. Show the result as a short table (site, what you can do, what you need from them). Get approval for any step that touches their machine or inbox.
-4. Save to `sources.json` with the working search URL pattern for each area.
+## Refine (optional, any time)
 
-Never present an untested site as working.
+Offer these after the first scout, one at a time, never all at once. Each is a `settings` sub-command.
 
-## 5. Scout schedule
+- **`settings calibrate`:** the single best improvement. Ask them to pick 2 listings they like and 1 they don't **from the board** (or links they already have). Then follow `scoring.md` "Tuning": loved ones should land at 80+, rejected ones should be gated or under 58. Fix the cause, re-score, show before and after in one line each. Save ids in `profile.calibration`.
+- **`settings weights`:** show the default weights as a short table (location 20, price 18, layout 15, pets 10, outdoor 10, type 8, nearby 6, entertaining 5, timing 5, features 3) and let them move points. Parts that don't apply (pets, with no pets) give their weight to the rest automatically. The defaults are a starting point, not a recommendation.
+- **`settings areas`:** half-liked areas ("only the part near the park") become a zone: `{label, center:[lat,lng], radiusKm}` or `bbox`. A listing outside the zone is a deal-breaker; one with no address loses a little and gets a question. "Only if it's great value" becomes `valueMax` on the area.
+- **`settings nearby`:** what they'd like within walking distance: a park, café, gym, school (`nearby`, walking km).
+- **`settings home`:** the full list. Types (house, gated_house, cluster, townhouse, semi, cottage, duplex, apartment, studio, room), beds and baths min/ideal, size min/ideal (`sizeM2`; convert from sq ft), outdoor and entertaining (`must`/`nice`/`ignore`), and features (backupPower, fibre, security, parking2, pool, study, furnished, aircon, lift, laundry, storage, ev, solar, schoolZone).
+- **`settings finance`** (buying): deposit, rate, term, monthly take-home, max share of income (`buying.md`).
 
-Ask: how often (daily is right for a hot rental market, 2–3 times a week for buying), what time, and whether to send a one-line summary on quiet days (recommend yes). Then set it up with the best mechanism the host offers, in this order:
+## Scheduling
 
-1. **A scheduling tool in your tool list**, such as a routine, trigger or scheduled-task tool. Create a job whose prompt is exactly: `Run /home-hunt scout for the workspace at <absolute path>. Follow references/scout.md.` Include the workspace path and, in a project, where to post the summary.
-2. **Claude Code on their own machine with nothing built in:** give them a cron (macOS/Linux) or Task Scheduler line to paste, and don't install it yourself:
-   `0 7 * * * cd <workspace parent> && claude -p "/home-hunt scout" --allowedTools "WebFetch,WebSearch,Read,Write,Edit,Bash(node:*)" >> home-hunt/scout.log 2>&1`
-3. **None of the above:** tell them to say "scout" whenever they like, and offer a calendar reminder.
+Use the best mechanism the host offers, in this order, and save the result as `sources.json.schedule` = `{cadence, time, timezone, mechanism, id, reportTo}`.
 
-Save the result to `sources.json.schedule` as `{cadence, time, timezone, mechanism, id}`, so `schedule off` can find and remove it.
+1. **A scheduling tool in your tool list** (a routine, trigger or scheduled-task tool). The job's prompt, exactly:
+   `Run a Home Hunt scout for the workspace at <absolute path>: follow the home-hunt skill's references/scout.md and post the report to <where>.`
+   Use a plain prompt, not a slash command, so it works however the skill is installed. Report to the chat, project or channel the user reads.
+2. **Claude Code on their own machine, nothing built in:** give them a line to paste; don't install it yourself. macOS/Linux cron, daily at 07:00 (use `1-5` in the 5th field for weekdays):
+   `0 7 * * * cd <workspace parent> && PATH=/usr/local/bin:/opt/homebrew/bin:$PATH HOME_HUNT_DIR=<workspace> claude -p "Run a Home Hunt scout for the workspace at <workspace>" --allowedTools "WebFetch,WebSearch,Read,Write,Edit,Bash(node *)" >> <workspace>/scout.log 2>&1`
+   Tell them the summary lands in `scout.log`, new listings appear on the board, and `status` shows the last run. Windows: the equivalent Task Scheduler action.
+3. **Nothing available:** they say "scout" when they like; offer a calendar reminder.
 
-## 6. Board
+### Changing or stopping the schedule (`schedule …`)
 
-Build it (`references/board.md`) with the calibration listings already on it, so it's not empty, and give them the link or path. Show them how it works in three lines: drag cards between columns, open a card to edit facts (the score updates live), and star ratings are per person and separate from the fit score.
-
-## 7. Wrap up
-
-One message:
-- What you set up: the profile in one line, the sites with their access, the schedule and the board link.
-- The first scout: offer to run it now (recommended).
-- Commands they'll use most: `add`, `scout`, `asks`, `settings`, `help`.
-
-Then, if the host has memory, save the workspace path, board URL and schedule id so future sessions find the hunt without asking.
+- **Scheduling tool:** update or delete the job by its saved `id`. If the id is missing, list the jobs and match on the workspace path.
+- **cron:** show the exact line to edit or remove (`crontab -e`). You can't remove it for them.
+- **Manual:** nothing to stop.
+- Always update `sources.json.schedule` (`mechanism: "off"` when stopped) and confirm in one line.

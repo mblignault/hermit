@@ -15,13 +15,15 @@ Open a card to edit its facts (the score updates as you change them) and see the
 | Any, as a read-only look | `hh.js board` → `board.html` | Embedded snapshot; edits stay in the browser until **Export changes**, then run `hh.js import <file>` | No |
 | claude.ai, or anywhere the Artifact tool exists | `hh.js board --mode artifact --out <file>`, then publish | The artifact database | Yes: share the link and give the household **Editor** access |
 
-Recommend the artifact board when the Artifact tool is available and more than one person is hunting: that's the shared, live board. Otherwise use `serve`.
+Recommend the artifact board when the Artifact tool is available and more than one person is hunting: that's the shared, live board. Otherwise use `serve`, and tell them the trade-off: the board lives on this computer, and others can only get a snapshot whose edits don't sync back.
+
+The board's header shows **Last scout** (time and how many were new, amber when it's over two days old), so people can see the scout is alive without asking.
 
 ## Artifact board
 
 1. Build: `hh.js board --mode artifact --out board.html`.
 2. Publish with the Artifact tool, declaring `capabilities: {db: {}, user: {}, assets: {}}`. Use icon `home` on the first publish.
-3. Seed it: `hh.js docs <dir>` writes one JSON file per document plus `writes.json`. Pass those entries to the artifact data tool as batch writes, up to 50 per batch. The documents are `meta/profile` (the profile), `listings/<id>` and `comments/<id>`.
+3. Seed it: `hh.js docs <dir>` writes one JSON file per document plus `writes.json`. Pass those entries to the artifact data tool as batch writes, up to 50 per batch. The documents are `meta/profile` (the profile), `meta/lastRun` (the latest scout run, shown as "Last scout" on the board), `listings/<id>` and `comments/<id>`.
 4. From then on, change data with data-tool writes (read the row, merge, write it back), not by republishing. Republish only when the page itself changes, and always to the same URL.
 5. Photos: upload them as assets to the artifact URL and set `photo: "/_blob/<assetId>"`.
 6. Save the board URL in `sources.json.board` (and in memory, if the host has it) so later runs update the same artifact.

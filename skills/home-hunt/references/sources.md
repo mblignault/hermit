@@ -28,7 +28,7 @@ For each site:
    - **loads but empty:** the page is probably built by JavaScript. Try the site's mobile domain or a mirror the pack lists. Otherwise set `access: browser`, with their approval.
    - **blocked:** a 403, a captcha or a "verify you are human" page. Don't retry with tricks. Set `access: browser`, `alerts`, `manual` or `blocked`.
    - **errors:** some portals throw server errors at automated readers on some pages and not others. Try 2–3 different pages before deciding, and note it as a quirk.
-4. Record, for each source: `{name, domain, role, access, via, searchUrls: {<area>: url}, detailPattern, idPattern, idPrefix, quirks: [], lastTest: {at, verdict}}`. `idPrefix` makes listing ids, such as `p24-117000000` or `rm-123456`.
+4. Record, for each source: `{name, domain, role, access, via, searchUrls: {<area>: url}, detailPattern, idPattern, idPrefix, quirks: [], lastTest: {at, verdict}}`. `idPrefix` makes listing ids, such as `ep-123456` for ExamplePortal.
 5. Paging: note how page 2 is addressed (`?page=2` and so on). Many portals ignore price filters in the URL, so filter by hand after reading.
 
 ## 4. Verifying a listing is live (golden rules 1–2)
@@ -40,8 +40,9 @@ Open the listing's **own** page. It's live only when all of these hold:
 - The availability date isn't months in the past. "Available now (since June)" in November usually means stale stock.
 
 Record `verify: {state: "live" | "unverified" | "delisted", at, note}`:
-- `delisted` takes positive evidence: a 404 or 410, "no longer available", or an archive redirect. Mark the listing `taken: true` and move it to `no` only if the user hasn't started a conversation about it. If they have, flag it to them instead.
-- `unverified`: the page errored or timed out. Keep it off the board, list it in the report, and retry next run.
+- `delisted` takes positive evidence: a 404 or 410, "no longer available", or an archive redirect.
+- `unverified`: the page errored or timed out.
+- What happens next depends on whether the listing is new or already a card. The one rule is in `scout.md` step 4 (new) and step 8 (existing).
 - In `verify` sweeps, a fast route in the user's browser is to run `fetch()` on each same-site path from an open tab of that site and read `status` plus the final `url`.
 
 ## 5. Geocoding and distances

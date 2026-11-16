@@ -1,34 +1,41 @@
 #!/usr/bin/env node
-// home-hunt CLI. Node 18+, no dependencies.
-// Workspace: --dir <path>, else $HOME_HUNT_DIR, else ./home-hunt
-//
-//   init                      create a workspace from templates (won't overwrite)
-//   status                    one-screen summary: profile, sources, board counts, last scout
-//   validate                  check profile.json and listings.json
-//   score [id|--all] [--explain] [--json]
-//   add <file.json|->         upsert one listing or an array (merges facts, tracks price changes, flags duplicates)
-//   set <id> key=value ...    edit fields (dot paths: facts.pets=yes, verify.state=live)
-//   dupes [--id <id>]         suggest likely duplicates across sites
-//   list [--status s] [--band b] [--active]
-//   board [--out f] [--mode snapshot|artifact]  build the board page (artifact = for claude.ai, data lives in the artifact db)
-//   serve [--port 4173]       live local board backed by listings.json
-//   probe <url>...            reachability check for listing sites (status, redirects, bot walls, listing signals)
-//   geo <lat,lng> <lat,lng>   straight-line and estimated road km
-//   import <changes.json>     merge edits exported from a static board
-//   export [--csv]            print listings as JSON or CSV
-//   docs [outdir]             write one file per artifact-db doc + writes.json, to seed a shared board
-//   runlog <json>             append a scout run record
-//   reset --yes [--keep-profile]  back up, then clear the workspace
+// home-hunt CLI. Node 18+, no dependencies. Run `node hh.js help` for commands.
 "use strict";
 const fs = require("fs");
 const path = require("path");
 const http = require("http");
 const { scoreListing, haversineKm, dupLikelihood: dupScore } = require("./score.js");
 
+const os = require("os");
 const SKILL = path.resolve(__dirname, "..");
+const USAGE = `home-hunt helper. Node 18+, no dependencies.
+
+Workspace: --dir <path>, else $HOME_HUNT_DIR, else ./home-hunt if it exists, else ~/home-hunt
+
+  init                          create a workspace from templates (never overwrites)
+  status                        one-screen summary: profile, sites, board counts, last scout
+  validate                      check profile.json and listings.json
+  score [id] [--explain] [--json]   live scores (all active listings, or one)
+  check <file.json|->           dry run: score, deal-breakers and likely duplicates, writes nothing
+  add <file.json|->             add or update one listing or an array (merges facts, tracks price changes)
+  set <id> key=value ...        edit fields (dot paths: facts.pets=yes, verify.state=live)
+  asks [--all]                  questions to put to agents, grouped by listing (active listings unless --all)
+  dupes [--id <id>]             likely duplicates across sites
+  list [--status s] [--band b] [--active]
+  board [--out f] [--mode snapshot|artifact] [--title t]   build the board page
+  serve [--port 4173]           live local board that saves to listings.json
+  demo [--port 4173]            open the fictional demo board (a temp copy; nothing in the skill changes)
+  probe <url>...                can this site be read from here? (status, bot walls, listing signals)
+  geo <lat,lng> <lat,lng>       straight-line and estimated road distance
+  import <changes.json>         merge edits exported from a snapshot board
+  export [--csv]                print listings as JSON or CSV
+  docs [outdir]                 one file per shared-board document + writes.json, to seed an artifact board
+  runlog '<json>'               append a scout run record
+  reset --yes [--keep-profile]  back up, then clear the workspace
+  help                          this text`;
 const argv = process.argv.slice(2);
 const opt = (name, def) => { const i = argv.indexOf("--" + name); if (i < 0) return def; const v = argv[i + 1]; argv.splice(i, v && !v.startsWith("--") ? 2 : 1); return v && !v.startsWith("--") ? v : true; };
-const DIR = path.resolve(opt("dir") || process.env.HOME_HUNT_DIR || "home-hunt");
+const DIR = path.resolve(opt("dir") || process.env.HOME_HUNT_DIR || (fs.existsSync("home-hunt/profile.json") ? "home-hunt" : path.join(os.homedir(), "home-hunt")));
 const F = {
   profile: path.join(DIR, "profile.json"), sources: path.join(DIR, "sources.json"),
   listings: path.join(DIR, "listings.json"), runs: path.join(DIR, "runs.jsonl"),
@@ -40,7 +47,9 @@ const writeJSON = (f, v) => { fs.mkdirSync(path.dirname(f), { recursive: true })
 const norm = s => String(s ?? "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 const today = () => new Date().toISOString().slice(0, 10);
 const loadStore = () => { const s = readJSON(F.listings, { listings: [], comments: [] }); s.listings ||= []; s.comments ||= []; return s; };
-const profile = () => readJSON(F.profile);
+const lastRun = () => { try { const t = fs.readFileSync(F.runs, "utf8").trim().split("\n").filter(Boolean); return t.length ? JSON.parse(t.at(-1)) : null; } catch { return null; } };
+const profile = () => { if (!fs.existsSync(F.profile)) die(`no profile at ${F.profile}. Run setup first, or point at your hunt with --dir <path> or HOME_HUNT_DIR.`); return readJSON(F.profile); };
+const readInput = src => { if (!src) die("give a JSON file, or - to read from stdin"); try { return JSON.parse(src === "-" ? fs.readFileSync(0, "utf8") : fs.readFileSync(src, "utf8")); } catch (e) { die(`can't read listing JSON from ${src}: ${e.message}`); } };
 
 function setPath(obj, dotted, value) {
   const keys = dotted.split("."); let o = obj;
@@ -72,7 +81,7 @@ function suggestDupes(store, only) {
 function upsert(store, incoming) {
   const now = Date.now(), res = [];
   for (const raw of [].concat(incoming)) {
-    if (!raw.id) die("every listing needs an id like <source>-<listing number>, e.g. p24-123456");
+    if (!raw.id) die("every listing needs an id like <source>-<listing number>, e.g. ep-123456");
     const cur = store.listings.find(l => l.id === raw.id);
     if (cur) {
       if (raw.price && cur.price && raw.price !== cur.price) (cur.priceHistory ||= []).push({ at: today(), from: cur.price, to: raw.price });
@@ -100,7 +109,7 @@ function buildBoard({ title, mode = "snapshot" } = {}) {
   const tpl = fs.readFileSync(path.join(SKILL, "assets", "board.html"), "utf8");
   const scorer = fs.readFileSync(path.join(__dirname, "score.js"), "utf8").replace(/^if \(typeof module.*$/m, "");
   const p = profile(), store = loadStore();
-  const data = { mode, profile: p, listings: store.listings, comments: store.comments, builtAt: new Date().toISOString() };
+  const data = { mode, profile: p, listings: store.listings, comments: store.comments, lastRun: lastRun(), builtAt: new Date().toISOString() };
   const safe = JSON.stringify(data).replace(/</g, "\\u003c");
   return tpl
     .replace("/*__SCORER__*/", () => "(function(){\n" + scorer + "\n})();")
@@ -135,7 +144,7 @@ function serve(port) {
   const server = http.createServer((req, res) => {
     const send = (code, body, type = "application/json") => { res.writeHead(code, { "content-type": type, "cache-control": "no-store" }); res.end(body); };
     if (req.method === "GET" && (req.url === "/" || req.url.startsWith("/?"))) return send(200, buildBoard({ mode: "server" }), "text/html; charset=utf-8");
-    if (req.method === "GET" && req.url === "/api/state") return send(200, JSON.stringify({ profile: profile(), ...loadStore() }));
+    if (req.method === "GET" && req.url === "/api/state") return send(200, JSON.stringify({ profile: profile(), ...loadStore(), lastRun: lastRun() }));
     if (req.method === "GET" && req.url.startsWith("/photos/")) {
       const f = path.join(F.photos, path.basename(decodeURIComponent(req.url.slice(8))));
       if (!fs.existsSync(f)) return send(404, "{}");
@@ -188,7 +197,7 @@ async function main() {
     }
     case "status": {
       const p = readJSON(F.profile, null), s = readJSON(F.sources, { sources: [] }), st = loadStore();
-      if (!p) { console.log(`No workspace at ${DIR}. Run setup first.`); break; }
+      if (!p) { console.log(`No hunt found at ${DIR}. Run setup, or point at an existing hunt with --dir <path> or HOME_HUNT_DIR.`); process.exitCode = 2; break; }
       const by = {}; for (const l of st.listings.filter(l => !l.dupOf)) by[l.status] = (by[l.status] || 0) + 1;
       const runs = fs.existsSync(F.runs) ? fs.readFileSync(F.runs, "utf8").trim().split("\n").filter(Boolean) : [];
       const last = runs.length ? JSON.parse(runs.at(-1)) : null;
@@ -220,10 +229,10 @@ async function main() {
       else for (const { l, r } of out) console.log(ex || id ? explain(l, r) + "\n" : `${String(r.score).padStart(3)} ${r.band.padEnd(7)} ${l.id.padEnd(22)} ${l.area || ""} ${l.price ?? ""}${r.gates.length ? "  ✗ " + r.gates[0] : ""}`);
       break;
     }
+    case "check":
     case "add": {
-      const src = argv[0]; if (!src) die("add <file.json|->");
-      const data = JSON.parse(src === "-" ? fs.readFileSync(0, "utf8") : fs.readFileSync(src, "utf8"));
-      const st = loadStore(), r = upsert(st, data); writeJSON(F.listings, st);
+      const data = readInput(argv[0]), dry = cmd === "check";
+      const st = loadStore(), r = upsert(st, data); if (!dry) writeJSON(F.listings, st); else r.dryRun = true;
       const p = readJSON(F.profile, null);
       if (p) r.scores = r.results.map(x => { const l = st.listings.find(y => y.id === x.id); const s = scoreListing(l, p); return { id: x.id, score: s.score, band: s.band, gates: s.gates, ask: s.ask }; });
       console.log(JSON.stringify(r, null, 2)); break;
@@ -232,6 +241,16 @@ async function main() {
       const id = argv.shift(); const st = loadStore(); const l = st.listings.find(x => x.id === id); if (!l) die(`no listing ${id}`);
       for (const kv of argv) { const i = kv.indexOf("="); if (i < 1) die(`bad key=value: ${kv}`); const k = kv.slice(0, i), v = kv.slice(i + 1); if (k === "price" && l.price && Number(v) !== l.price) (l.priceHistory ||= []).push({ at: today(), from: l.price, to: Number(v) }); setPath(l, k, v); }
       l.updatedAt = Date.now(); writeJSON(F.listings, st); console.log(`✓ ${id} updated`); break;
+    }
+    case "asks": {
+      const p = profile(), st = loadStore(), all = opt("all"); let n = 0;
+      for (const l of st.listings) {
+        if (l.dupOf || (!all && (l.taken || l.status === "no"))) continue;
+        const r = scoreListing(l, p); if (!r.ask.length || (!all && r.band === "no-fit")) continue; n += r.ask.length;
+        const who = [l.agent?.name, l.agent?.phone, l.agent?.email].filter(Boolean).join(", ");
+        console.log(`${l.facts?.realArea || l.area || "?"} ${l.price ?? ""}  (${l.id}, score ${r.score})${who ? "  agent: " + who : ""}${l.url ? "\n  " + l.url : ""}\n` + r.ask.map(a => "  - " + a).join("\n") + "\n");
+      }
+      if (!n) console.log("No open questions."); break;
     }
     case "dupes": console.log(JSON.stringify(suggestDupes(loadStore(), opt("id")), null, 2)); break;
     case "list": {
@@ -246,7 +265,14 @@ async function main() {
       const out = path.resolve(opt("out") || F.board); const mode = opt("mode") || "snapshot"; if (!["snapshot", "artifact"].includes(mode)) die("--mode snapshot|artifact"); fs.writeFileSync(out, buildBoard({ title: opt("title"), mode }));
       console.log(`✓ board written to ${out}`); break;
     }
-    case "serve": serve(Number(opt("port") || 4173)); break;
+    case "serve": profile(); serve(Number(opt("port") || 4173)); break;
+    case "demo": { // serve a throwaway copy so playing with the demo never edits the skill's files
+      const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "home-hunt-demo-"));
+      for (const f of ["profile.json", "listings.json"]) fs.copyFileSync(path.join(SKILL, "examples", "demo", f), path.join(tmp, f));
+      Object.assign(F, { profile: path.join(tmp, "profile.json"), listings: path.join(tmp, "listings.json"), photos: path.join(tmp, "photos") });
+      console.log("Demo with fictional data. Edits go to a temp copy: " + tmp);
+      serve(Number(opt("port") || 4173)); break;
+    }
     case "probe": {
       if (!argv.length) die("probe <url>...");
       for (const u of argv) console.log(JSON.stringify(await probe(u)));
@@ -272,13 +298,13 @@ async function main() {
     case "docs": { // one JSON file per artifact-db document, for seeding the shared board with the artifact data tool
       const out = path.resolve(argv[0] || path.join(DIR, "docs")), st = loadStore(), w = [];
       const put = (col, id, v) => { const f = path.join(out, col, id.replace(/[^\w.~:@+-]/g, "_") + ".json"); writeJSON(f, v); w.push({ op: "set", collection: col, doc_id: path.basename(f, ".json"), file_path: f }); };
-      put("meta", "profile", profile());
+      put("meta", "profile", profile()); const lr = lastRun(); if (lr) put("meta", "lastRun", lr);
       for (const l of st.listings) put("listings", l.id, l);
       for (const c of st.comments) put("comments", c.id, c);
       writeJSON(path.join(out, "writes.json"), w);
       console.log(`✓ ${w.length} documents in ${out}; batch writes (max 50 per batch) listed in writes.json`); break;
     }
-    case "runlog": { const rec = JSON.parse(argv[0]); rec.at ||= new Date().toISOString(); fs.appendFileSync(F.runs, JSON.stringify(rec) + "\n"); console.log("✓ logged"); break; }
+    case "runlog": { let rec; try { rec = JSON.parse(argv[0]); } catch { die(`runlog needs one JSON object, e.g. '{"checked":12,"added":2,"sources":["ExamplePortal"]}'`); } rec.at ||= new Date().toISOString(); fs.appendFileSync(F.runs, JSON.stringify(rec) + "\n"); console.log("✓ logged"); break; }
     case "reset": {
       if (!opt("yes")) die("reset needs --yes (it backs up first, then clears listings" + " and, without --keep-profile, the profile and sources)");
       const keep = opt("keep-profile"), stamp = new Date().toISOString().replace(/[:.]/g, "-"), dst = path.join(F.backups, stamp);
@@ -286,10 +312,10 @@ async function main() {
       for (const f of [F.profile, F.sources, F.listings, F.runs]) if (fs.existsSync(f)) fs.copyFileSync(f, path.join(dst, path.basename(f)));
       writeJSON(F.listings, { listings: [], comments: [] }); if (fs.existsSync(F.runs)) fs.unlinkSync(F.runs);
       if (!keep) for (const f of [F.profile, F.sources]) if (fs.existsSync(f)) fs.unlinkSync(f);
-      console.log(`✓ backed up to ${dst} and reset${keep ? " (profile kept)" : ""}`); break;
+      console.log(`✓ backed up to ${dst} and reset${keep ? " (profile kept)" : ""}.\nNot touched here: a scheduled scout, and a shared artifact board. Turn those off or clear them separately.`); break;
     }
-    default:
-      console.log(fs.readFileSync(__filename, "utf8").split("\n").slice(1, 22).map(l => l.replace(/^\/\/ ?/, "")).join("\n"));
+    case undefined: case "help": case "--help": case "-h": console.log(USAGE); break;
+    default: die(`unknown command "${cmd}". Run: node hh.js help`);
   }
 }
 main();

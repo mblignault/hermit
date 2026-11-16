@@ -14,11 +14,11 @@
 | Part | Default weight | Full marks when | Gate when |
 |---|---|---|---|
 | location | 20 | tier-1 area **and** close to every anchor (average of the two when coordinates exist) | area excluded; outside a zone; over an anchor's `hard` max |
-| price | 15 | ≤ `budget.ideal`; falls linearly to 0.4 at `budget.max` | over `budget.max` |
+| price | 18 | ≤ `budget.ideal`; falls linearly to 0.4 at `budget.max` | over `budget.max` |
 | pets | 10 | `yes` | `no`; `small_only` with medium or large animals; `cats_only` with dogs |
 | outdoor | 10 | `large` | `none` when outdoor is `must` |
-| entertain | 10 | `covered_patio_bbq` | `none` when entertain is `must` |
-| layout | 13 | beds = ideal, baths ≥ ideal, size ≥ ideal (size counts only if set) | beds below the minimum |
+| entertain | 5 | `covered_patio_bbq` | `none` when entertain is `must` |
+| layout | 15 | beds = ideal, baths ≥ ideal, size ≥ ideal (size counts only if set) | beds below the minimum |
 | type | 8 | first preferred type (each later preferred type gets −0.08) | type excluded |
 | nearby | 6 | each nearby item within `idealKm` walking | none |
 | timing | 5 | available between `earliest` and `latest` | after `hardLatest` |
@@ -30,29 +30,31 @@ Buy mode adds a repayment check to price: monthly repayment plus levies and rate
 
 ```jsonc
 {
+  "version": 1, "title": "Riverside Rental Hunt",   // title is the board's name: make it theirs
   "mode": "rent",                       // rent | buy
-  "country": "ZA", "currency": "ZAR", "locale": "en-ZA",
+  "country": "US", "currency": "USD", "locale": "en-US",
+  "units": "imperial",                  // metric | imperial: display only, data is always km and m²
   "household": { "people": [{ "id": "a", "name": "Alex" }], "pets": [{ "kind": "dog", "size": "medium", "count": 2 }] },
-  "budget": { "ideal": 21000, "max": 25000 },        // rent per period the portals use; buy = price
+  "budget": { "ideal": 2300, "max": 2600 },          // rent per period the portals use; buy = price
   "finance": { "monthlyNetIncome": null, "deposit": null, "ratePct": null, "termYears": 20, "maxShare": 0.3 },
   "moveIn": { "earliest": "2027-03-01", "latest": "2027-04-01", "hardLatest": "2027-04-30" },
   "areas": [
     { "name": "Riverside", "tier": 1, "aliases": ["Riverside East"] },
-    { "name": "Hillcrest", "tier": 4, "valueMax": 19000,
+    { "name": "Hillcrest", "tier": 4, "valueMax": 2200,
       "zone": { "label": "the edge next to Parkside", "center": [45.535, 10.03], "radiusKm": 1.0 } }  // or "bbox": [s, w, n, e]
   ],
   "tiers": { "1": 1, "2": 0.8, "3": 0.6, "4": 0.5, "5": 0.3 },   // optional: fraction of location points per tier
   "excludeAreas": ["Northgate"],
   "outsideAreas": "score-zero",          // or "gate"
   "anchors": [{ "id": "work-a", "label": "Alex's office", "lat": 0, "lng": 0, "idealKm": 8, "maxKm": 20, "weight": 2, "hard": false }],
-  "nearby": [{ "id": "local", "label": "a walkable pub", "idealKm": 1, "maxKm": 3 }],
+  "nearby": [{ "id": "park", "label": "a park", "idealKm": 1, "maxKm": 3 }],
   "requirements": {
-    "types": { "preferred": ["house_in_estate", "cluster"], "acceptable": ["cottage"], "excluded": ["apartment"] },
+    "types": { "preferred": ["house", "townhouse"], "acceptable": ["duplex"], "excluded": ["apartment"] },
     "beds": { "min": 2, "ideal": 3, "overOk": false }, "baths": { "min": 2, "ideal": 2 }, "sizeM2": { "min": 90, "ideal": 130 },
     "outdoor": "must", "entertain": "nice",       // must | nice | ignore
     "features": { "backupPower": "nice", "furnished": "avoid" }   // must | nice | avoid
   },
-  "weights": { "location": 20, "price": 15, "pets": 10, "outdoor": 10, "entertain": 10, "layout": 13, "type": 8, "nearby": 6, "timing": 5, "features": 3 },
+  "weights": { "location": 20, "price": 18, "pets": 10, "outdoor": 10, "entertain": 5, "layout": 15, "type": 8, "nearby": 6, "timing": 5, "features": 3 },
   "bands": { "strong": 85, "good": 72, "maybe": 58 },
   "caps": { "bathsBelowMin": 64, "overValueMax": 71 },
   "calibration": { "liked": ["id"], "disliked": ["id"], "notes": "" }

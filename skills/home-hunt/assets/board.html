@@ -104,7 +104,7 @@ h1 .mark{width:28px;height:28px;border-radius:8px;background:linear-gradient(135
 .drawer{position:fixed;top:0;right:0;bottom:0;width:min(480px,100%);background:var(--surface);z-index:21;display:flex;flex-direction:column;box-shadow:-10px 0 30px rgba(0,0,0,.18);padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) 0}
 .d-head{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line);gap:8px}
 .d-head h3{font:700 18px var(--f-display);margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.d-body{overflow-y:auto;padding:16px 18px 24px;display:flex;flex-direction:column;gap:14px}
+.d-body{overflow-y:auto;padding:16px 18px 24px;display:flex;flex-direction:column;gap:14px}.d-body>*{flex:none}
 .d-thumb{aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:var(--surface-2);display:grid;place-items:center;color:var(--muted)}.d-thumb img{width:100%;height:100%;object-fit:cover}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media (max-width:420px){.grid2{grid-template-columns:1fr}}
 label.f{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--muted);min-width:0}
@@ -215,7 +215,7 @@ body.v-board .map-wrap,body.v-board .cal-wrap,body.v-map .board-wrap,body.v-map 
 <div class="view board-wrap" id="boardWrap"><div class="board" id="board"></div></div>
 <div class="view map-wrap"><div class="map-grid">
   <div class="map-card"><div class="svgbox"><svg id="mapSvg" viewBox="0 0 900 620" role="img" aria-label="Map of listings and the places you travel to"></svg></div>
-    <div class="legend"><span><i style="background:var(--ok)"></i>Strong / good</span><span><i style="background:var(--warn)"></i>Maybe</span><span><i style="background:var(--bad)"></i>Weak / no fit</span><span>■ Places you travel to</span><span>Dashed rings: partial-area zones</span><span id="mapNote"></span></div></div>
+    <div class="legend"><span><i style="background:var(--ok)"></i>Strong / good</span><span><i style="background:var(--warn)"></i>Maybe</span><span><i style="background:var(--bad)"></i>Weak / no fit</span><span>■ Places you travel to</span><span>Dashed rings: the part of an area you like</span><span id="mapNote"></span></div></div>
   <div class="rank" id="rankList"></div>
 </div></div>
 <div class="view cal-wrap">
@@ -256,7 +256,7 @@ const LANES = () => [
   { id: "no", name: "No", hint: "Ruled out", t: "#8a959e" },
 ];
 const SUBS = [{ id: "new", name: "New", hint: "Just spotted" }, { id: "deciding", name: "Deciding", hint: "Talking it over" }, { id: "tocontact", name: "To contact", hint: "Agreed: reach out" }];
-const TYPES = ["house", "house_in_estate", "cluster", "townhouse", "semi", "cottage", "duplex", "apartment", "studio", "room"];
+const TYPES = ["house", "gated_house", "cluster", "townhouse", "semi", "cottage", "duplex", "apartment", "studio", "room"];
 const OPT = {
   pets: [["unknown", "Not stated"], ["yes", "Allowed"], ["permission", "With permission"], ["likely", "Likely"], ["small_only", "Small pets only"], ["cats_only", "Cats only"], ["no", "Not allowed"]],
   outdoor: [["unknown", "Not stated"], ["large", "Large private garden"], ["private", "Private garden"], ["small", "Small yard"], ["communal", "Communal only"], ["none", "None"]],
@@ -275,8 +275,22 @@ function prefs(save) {
 function money(n) { if (n == null || n === "") return "—"; try { return new Intl.NumberFormat(P().locale || undefined, { style: "currency", currency: P().currency || "USD", maximumFractionDigits: 0 }).format(n); } catch (e) { return String(n); } }
 function moneyShort(n) { if (n == null || n === "") return "?"; if (n < 10000) return money(n); const c = money(0).replace(/[\d\s.,]/g, ""); return n >= 1e6 ? c + (n / 1e6).toFixed(n % 1e6 ? 2 : 0) + "m" : n >= 1e3 ? c + (n / 1e3).toFixed(n % 1e3 ? 1 : 0) + "k" : c + n; }
 function scoreOf(it) { return S.scoreListing(it, P()); }
-function specOf(it) { return [it.beds != null && it.beds + " bed", it.baths != null && it.baths + " bath", it.parking != null && it.parking + " pk", it.sizeM2 && it.sizeM2 + " m²"].filter(Boolean).join(" · "); }
-function typeLabel(t) { return t ? String(t).replace(/_/g, " ").replace(/^./, c => c.toUpperCase()) : ""; }
+function specOf(it) { return [it.beds != null && it.beds + " bed", it.baths != null && it.baths + " bath", it.parking != null && it.parking + " pk", it.sizeM2 && S.fmtSize(it.sizeM2, P())].filter(Boolean).join(" · "); }
+const TYPE_LABELS = { gated_house: "House in a gated estate", house_in_estate: "House in a gated estate", cluster: "Cluster home", semi: "Semi-detached" };
+function lastRunChip() {
+  const r = state.lastRun; if (!r?.at) return "";
+  const d = new Date(r.at), h = (Date.now() - d) / 36e5, stale = h > 48;
+  const when = h < 20 ? d.toLocaleTimeString(P().locale || undefined, { hour: "2-digit", minute: "2-digit" }) : d.toLocaleDateString(P().locale || undefined, { weekday: "short", day: "numeric", month: "short" });
+  return `<span title="${esc(`Checked ${r.checked ?? "?"} listings${r.sources ? " on " + [].concat(r.sources).join(", ") : ""}`)}"${stale ? ' style="color:var(--warn)"' : ""}>Last scout <strong>${esc(when)}</strong> · ${r.added ? `<strong class="num">${r.added}</strong> new` : "nothing new"}</span>`;
+}
+function typeLabel(t) { return t ? TYPE_LABELS[t] || String(t).replace(/_/g, " ").replace(/^./, c => c.toUpperCase()) : ""; }
+// Data stays metric (m², km); imperial profiles see and type sq ft and miles.
+const IMP = () => P().units === "imperial";
+const sizeUnit = () => IMP() ? "sq ft" : "m²", distUnit = () => IMP() ? "mi" : "km";
+const sizeToUi = m2 => m2 == null || m2 === "" ? "" : IMP() ? Math.round(m2 * 10.7639) : m2;
+const sizeFromUi = v => v == null ? v : IMP() ? Math.round(v / 10.7639) : v;
+const distToUi = km => km == null || km === "" ? "" : IMP() ? +(km / 1.609344).toFixed(2) : km;
+const distFromUi = v => IMP() ? +(v * 1.609344).toFixed(3) : v;
 function fmtView(v) { if (!v) return ""; const d = parseLocal(v); return d ? d.toLocaleString(P().locale || undefined, { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : v; }
 function parseLocal(v) { const m = /^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d)/.exec(v || ""); return m ? new Date(+m[1], m[2] - 1, +m[3], +m[4], +m[5]) : null; }
 function toast(html, ms = 3500) { const t = $("#toast"); t.innerHTML = html; t.hidden = false; clearTimeout(toast.t); if (ms) toast.t = setTimeout(() => t.hidden = true, ms); }
@@ -316,7 +330,8 @@ function renderHeader() {
   const sc = active.map(scoreOf), strong = sc.filter(s => s.band === "strong" || s.band === "good").length;
   const asks = sc.reduce((a, s) => a + s.ask.length, 0);
   const next = active.filter(i => i.viewingAt && parseLocal(i.viewingAt) > new Date()).sort((a, b) => a.viewingAt.localeCompare(b.viewingAt))[0];
-  $("#stats").innerHTML = `<span><strong class="num">${active.length}</strong> active</span><span><strong class="num">${strong}</strong> good or strong</span><span><strong class="num">${prim.filter(i => i.status === "viewing" && !i.taken).length}</strong> viewings</span><span><strong class="num">${asks}</strong> questions for agents</span>${next ? `<span>Next viewing <strong>${esc(fmtView(next.viewingAt))}</strong></span>` : ""}`;
+  const nView = prim.filter(i => i.status === "viewing" && !i.taken).length;
+  $("#stats").innerHTML = `<span><strong class="num">${active.length}</strong> active</span><span><strong class="num">${strong}</strong> good or strong</span><span><strong class="num">${nView}</strong> viewing${nView === 1 ? "" : "s"}</span><span><strong class="num">${asks}</strong> questions for agents</span>${next ? `<span>Next viewing <strong>${esc(fmtView(next.viewingAt))}</strong></span>` : ""}${lastRunChip()}`;
   $("#areaList").innerHTML = (p.areas || []).map(a => `<option value="${esc(a.name)}">`).join("");
   $("#fBudget").setAttribute("aria-pressed", state.budget); $("#fFit").setAttribute("aria-pressed", state.hideNoFit); $("#fTaken").setAttribute("aria-pressed", state.taken);
   $("#exportBtn").hidden = state.mode !== "snapshot";
@@ -335,7 +350,7 @@ function cardHTML(it, compact) {
   }
   if (n) tags.push(`<span class="tag">${n + 1} listings</span>`);
   if ((it.priceHistory || []).length) { const h = it.priceHistory.at(-1); tags.push(`<span class="tag ${h.to < h.from ? "ok" : "warn"}">${h.to < h.from ? "↓" : "↑"} ${esc(moneyShort(Math.abs(h.to - h.from)))}</span>`); }
-  const rate = R.any ? `<span class="rate${R.split ? " split" : ""}" title="Your ratings">${people().map((p, i) => `${esc((p.name || "?")[0])}<b>${R.v[i] || "–"}</b>`).join(" ")}${compact ? "" : ` · <b>★${R.avg.toFixed(1)}</b>`}</span>` : "";
+  const rate = R.any ? `<span class="rate${R.split ? " split" : ""}" title="${esc(people().map((p, i) => `${p.name || "?"}: ${R.v[i] ? R.v[i] + " stars" : "not rated"}`).join(", "))}${R.split ? " (you disagree)" : ""}">${people().map((p, i) => compact ? `${esc((p.name || "?")[0])}<b>${R.v[i] || "–"}</b>` : `${esc(String(p.name || "?").slice(0, 8))} <b>${R.v[i] || "–"}★</b>`).join(" · ")}</span>` : "";
   return `<button class="card${compact ? " compact" : ""}${it.taken ? " taken" : ""}" draggable="${state.canWrite}" data-id="${esc(it.id)}" type="button">
     <div class="thumb">${it.photo ? `<img src="${esc(it.photo)}" alt="" loading="lazy">` : `<span class="ph">${esc(it.area || "No photo")}</span>`}
       <span class="score ${bc}" title="Fit ${r.score}/100, ${bl}; ${Math.round(r.confidence * 100)}% of facts known"><b>${r.score}</b>${compact ? "" : esc(bl)}</span>${rate}
@@ -344,7 +359,7 @@ function cardHTML(it, compact) {
       <span class="area">${esc(it.facts?.realArea || it.area || "Area?")}${it.complex && !compact ? " · " + esc(it.complex) : ""}</span>
       <span class="spec">${esc(specOf(it))}</span>
       ${compact ? "" : `<div class="tags">${tags.join("")}</div>`}
-      ${it.viewingAt && !compact ? `<span class="viewing">Viewing ${esc(fmtView(it.viewingAt))}</span>` : ""}
+      ${it.viewingAt && !compact ? `<span class="viewing">${new Date(it.viewingAt) < new Date() ? "Viewed" : "Viewing"} ${esc(fmtView(it.viewingAt))}</span>` : ""}
       ${!compact && (it.agent?.name || cc) ? `<div class="foot"><span>${esc(it.agent?.name || "")}${it.agent?.agency ? " · " + esc(it.agent.agency) : ""}</span><span>${cc ? cc + " 💬" : ""}</span></div>` : ""}
     </div></button>`;
 }
@@ -439,7 +454,7 @@ function renderDrawer() {
     <label class="f">Beds<input id="fBeds" type="number" min="0" step="0.5" value="${esc(it.beds)}"></label>
     <label class="f">Baths<input id="fBaths" type="number" min="0" step="0.5" value="${esc(it.baths)}"></label>
     <label class="f">Parking<input id="fPark" type="number" min="0" value="${esc(it.parking)}"></label>
-    <label class="f">Size (m²)<input id="fSize" type="number" min="0" value="${esc(it.sizeM2)}"></label>
+    <label class="f">Size (${sizeUnit()})<input id="fSize" type="number" min="0" value="${esc(sizeToUi(it.sizeM2))}"></label>
     <label class="f">Status<select id="fStatus">${LANES().map(l => `<option value="${l.id}"${l.id === (it.status || "inbox") ? " selected" : ""}>${esc(l.name)}</option>`).join("")}</select></label>
     <label class="f">Inbox stage<select id="fStage">${SUBS.map(s => `<option value="${s.id}"${s.id === stageOf(it) ? " selected" : ""}>${s.name}</option>`).join("")}</select></label>
     <label class="f">Viewing<input id="fView" type="datetime-local" step="900" value="${esc(it.viewingAt)}"></label>
@@ -458,7 +473,7 @@ function renderDrawer() {
     <label class="f">Real area (if mislabelled)<input id="fReal" list="areaList" value="${esc(f.realArea)}" placeholder="Leave blank if correct"></label>
     ${area?.zone ? `<label class="f">Which part of ${esc(area.name)}?<select id="fSide"><option value="">Not checked</option><option value="near"${f.subArea === "near" ? " selected" : ""}>${esc(area.zone.label || "Right part")}</option><option value="far"${f.subArea === "far" ? " selected" : ""}>Wrong part</option></select></label>` : ""}
     <label class="f">Latitude, longitude<input id="fLL" value="${it.lat != null ? esc(it.lat + ", " + it.lng) : ""}" placeholder="-33.92, 18.42"></label>
-    ${(p.nearby || []).map(n => `<label class="f">Walk to ${esc(n.label)} (km)<input data-near="${esc(n.id)}" type="number" min="0" step="0.1" value="${esc(f.nearby?.[n.id])}"></label>`).join("")}
+    ${(p.nearby || []).map(n => `<label class="f">Walk to ${esc(n.label)} (${distUnit()})<input data-near="${esc(n.id)}" type="number" min="0" step="0.1" value="${esc(distToUi(f.nearby?.[n.id]))}"></label>`).join("")}
   </div>
   ${feats.length ? `<div class="grid2">${feats.map(k => `<label class="f">${esc(S.FEATURE_LABELS[k] || k)}<select data-feat="${esc(k)}"><option value="">Not stated</option><option value="true"${f.features?.[k] === true ? " selected" : ""}>Yes</option><option value="false"${f.features?.[k] === false ? " selected" : ""}>No</option></select></label>`).join("")}</div>` : ""}</div>
   ${it._new ? "" : `<div class="box"><h4><span>Your ratings</span><span class="meta">${R.any ? "★" + R.avg.toFixed(1) : "after the viewing"}</span></h4>
@@ -477,14 +492,14 @@ function renderDrawer() {
 }
 function readDrawer() {
   const it = state.editing, f = { ...(it.facts || {}) }, v = id => { const e = document.getElementById(id); return e ? e.value.trim() : undefined; }, n = id => { const x = v(id); return x === "" || x == null ? undefined : Number(x); };
-  Object.assign(it, { url: v("fUrl") || undefined, price: n("fPrice"), area: v("fArea") || undefined, type: v("fType") || undefined, beds: n("fBeds"), baths: n("fBaths"), parking: n("fPark"), sizeM2: n("fSize"), status: v("fStatus"), stage: v("fStage"), viewingAt: v("fView") || undefined, address: v("fAddr") || undefined, complex: v("fCx") || undefined, notes: v("fNotes") || undefined, taken: $("#fTakenBox").checked });
+  Object.assign(it, { url: v("fUrl") || undefined, price: n("fPrice"), area: v("fArea") || undefined, type: v("fType") || undefined, beds: n("fBeds"), baths: n("fBaths"), parking: n("fPark"), sizeM2: sizeFromUi(n("fSize")), status: v("fStatus"), stage: v("fStage"), viewingAt: v("fView") || undefined, address: v("fAddr") || undefined, complex: v("fCx") || undefined, notes: v("fNotes") || undefined, taken: $("#fTakenBox").checked });
   it.agent = { ...(it.agent || {}), name: v("fAgent") || undefined, phone: v("fPhone") || undefined, agency: v("fAgency") || undefined };
   if ($("#fPets")) f.pets = v("fPets"); f.outdoor = v("fOut"); f.entertain = v("fEnt"); f.realArea = v("fReal") || undefined;
   if ($("#fSide")) f.subArea = v("fSide") || undefined;
   if ($("#fAvail")) f.available = v("fAvail") || f.available;
   if ($("#fLevies")) { f.levies = n("fLevies"); f.rates = n("fRates"); }
   const ll = (v("fLL") || "").split(/[ ,]+/).map(Number); if (ll.length === 2 && ll.every(x => !isNaN(x))) { it.lat = ll[0]; it.lng = ll[1]; } else if (!v("fLL")) { delete it.lat; delete it.lng; }
-  $$("[data-near]").forEach(e => { f.nearby = { ...(f.nearby || {}) }; if (e.value === "") delete f.nearby[e.dataset.near]; else f.nearby[e.dataset.near] = Number(e.value); });
+  $$("[data-near]").forEach(e => { f.nearby = { ...(f.nearby || {}) }; if (e.value === "") delete f.nearby[e.dataset.near]; else f.nearby[e.dataset.near] = distFromUi(Number(e.value)); });
   $$("[data-feat]").forEach(e => { f.features = { ...(f.features || {}) }; if (e.value === "") delete f.features[e.dataset.feat]; else f.features[e.dataset.feat] = e.value === "true"; });
   it.facts = f;
   if (it.viewingAt && ["inbox", "contacted"].includes(it.status)) it.status = "viewing";
@@ -526,9 +541,13 @@ function renderMap() {
     const sc = Math.min((W - 2 * pad) / spanX, (H - 2 * pad) / spanY); const ox = (W - spanX * sc) / 2, oy = (H - spanY * sc) / 2;
     const X = lng => ox + (lng - w) * k * sc, Y = lat => oy + (n - lat) * sc, kmPx = sc / 111;
     let g = `<rect width="${W}" height="${H}" fill="var(--surface-2)"/>`;
-    const kmBar = [1, 2, 5, 10, 20, 50].find(km => km * kmPx > 60) || 50;
-    g += `<g font-size="11" fill="var(--muted)"><line x1="20" y1="${H - 30}" x2="${20 + kmBar * kmPx}" y2="${H - 30}" stroke="var(--muted)" stroke-width="2"/><text x="20" y="${H - 37}">${kmBar} km</text></g>`;
-    for (const z of zones) g += `<g><circle cx="${X(z.zone.center[1])}" cy="${Y(z.zone.center[0])}" r="${(z.zone.radiusKm || 1) * kmPx}" fill="var(--accent-soft)" fill-opacity=".5" stroke="var(--accent)" stroke-dasharray="5 4"/><text x="${X(z.zone.center[1])}" y="${Y(z.zone.center[0]) - (z.zone.radiusKm || 1) * kmPx - 6}" text-anchor="middle" font-size="11" fill="var(--muted)">${esc(z.name)}: ${esc(z.zone.label || "")}</text></g>`;
+    const uKm = IMP() ? 1.609344 : 1, kmBar = ([1, 2, 5, 10, 20, 50].find(u => u * uKm * kmPx > 60) || 50);
+    g += `<g font-size="11" fill="var(--muted)"><line x1="20" y1="${H - 30}" x2="${20 + kmBar * uKm * kmPx}" y2="${H - 30}" stroke="var(--muted)" stroke-width="2"/><text x="20" y="${H - 37}">${kmBar} ${distUnit()}</text></g>`;
+    // Zone labels go above the ring, else below it, else just inside it: wherever no pin covers them.
+    const pinXY = items.map(i => [X(i.lng), Y(i.lat)]);
+    const labelY = (cx, cy, r, text) => { const half = text.length * 3.2 + 6; const clear = y => !pinXY.some(([px, py]) => Math.abs(px - cx) < half + 15 && Math.abs(py - (y - 4)) < 22); const tries = [cy - r - 6, cy + r + 16, cy - r + 20, cy + r - 10]; return tries.find(clear) ?? tries[0]; };
+    for (const z of zones) { const zx = X(z.zone.center[1]), zy = Y(z.zone.center[0]), zr = (z.zone.radiusKm || 1) * kmPx, zt = `${z.name}: ${z.zone.label || ""}`;
+      g += `<g><circle cx="${zx}" cy="${zy}" r="${zr}" fill="var(--accent-soft)" fill-opacity=".5" stroke="var(--accent)" stroke-dasharray="5 4"/><text x="${zx}" y="${labelY(zx, zy, zr, zt)}" text-anchor="middle" font-size="11" fill="var(--muted)" stroke="var(--surface)" stroke-width="4" paint-order="stroke" stroke-linejoin="round">${esc(zt)}</text></g>`; }
     for (const a of anchors) g += `<g><rect x="${X(a.lng) - 7}" y="${Y(a.lat) - 7}" width="14" height="14" rx="3" fill="var(--fg)"/><text x="${X(a.lng) + 11}" y="${Y(a.lat) + 4}" font-size="12" font-weight="700" fill="var(--fg)">${esc(a.label)}</text></g>`;
     for (const i of items) { const r = scoreOf(i), c = BAND[r.band][1]; g += `<g class="pin" data-id="${esc(i.id)}" tabindex="0" role="button" aria-label="${esc((i.area || "") + " " + r.score)}"><circle cx="${X(i.lng)}" cy="${Y(i.lat)}" r="15" fill="var(--surface)" stroke="var(--${c})" stroke-width="2.5"/><text x="${X(i.lng)}" y="${Y(i.lat) + 4}" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--${c})" font-family="var(--f-mono)">${r.score}</text></g>`; }
     svg.innerHTML = g;
@@ -547,11 +566,14 @@ function renderCal() {
   inWeek.forEach((e, i) => { const prev = inWeek[i - 1]; if (prev && prev.d.toDateString() === e.d.toDateString() && (e.d - prev.d) / 6e4 < 45) e.tight = prev.tight = true; });
   const loc = P().locale || undefined, today = new Date().toDateString();
   $("#wTitle").textContent = days[0].toLocaleDateString(loc, { day: "numeric", month: "short" }) + " – " + days[6].toLocaleDateString(loc, { day: "numeric", month: "short", year: "numeric" });
+  // Viewings are drawn an hour long; ones that overlap share the day's width side by side.
+  { let cluster = [], end = 0; const flush = () => { cluster.forEach((e, k) => { e.col = k; e.ncol = cluster.length; }); cluster = []; };
+    inWeek.forEach(e => { const s = +e.d; if (cluster.length && (s >= end || e.d.toDateString() !== cluster[0].d.toDateString())) flush(); cluster.push(e); end = Math.max(cluster.length > 1 ? end : 0, s + 36e5); }); flush(); }
   $("#wSum").innerHTML = `<b>${inWeek.length}</b> viewing${inWeek.length === 1 ? "" : "s"}${inWeek.some(e => e.tight) ? " · <span style='color:var(--warn)'>some are under 45 min apart</span>" : ""}`;
   const col = it => BAND[scoreOf(it).band][1] === "ok" ? "var(--ok)" : BAND[scoreOf(it).band][1] === "warn" ? "var(--warn)" : "var(--bad)";
   let g = `<div class="cal-dh corner"></div>` + days.map(d => `<div class="cal-dh d${d.toDateString() === today ? " today" : ""}"><div class="wd">${d.toLocaleDateString(loc, { weekday: "short" })}</div><div class="dn">${d.getDate()}</div></div>`).join("");
   g += `<div class="cal-hours" style="height:${(H1 - H0) * HH}px">${[...Array(H1 - H0)].map((_, i) => i ? `<span style="top:${i * HH}px">${String(H0 + i).padStart(2, "0")}:00</span>` : "").join("")}</div>`;
-  g += days.map((d, di) => `<div class="cal-day${d.toDateString() === today ? " today" : ""}" data-day="${di}" style="--hh:${HH}px;height:${(H1 - H0) * HH}px">${inWeek.filter(e => e.d.toDateString() === d.toDateString()).map(e => { const top = (e.d.getHours() + e.d.getMinutes() / 60 - H0) * HH; return top < 0 || top > (H1 - H0) * HH ? "" : `<button class="ev${e.tight ? " tight" : ""}" type="button" data-id="${esc(e.it.id)}" style="--c:${col(e.it)};top:${top}px;height:${HH - 4}px;left:3px;right:3px"><span class="t">${e.d.toTimeString().slice(0, 5)}</span><span class="a">${esc(e.it.facts?.realArea || e.it.area || "?")} ${esc(moneyShort(e.it.price))}</span></button>`; }).join("")}</div>`).join("");
+  g += days.map((d, di) => `<div class="cal-day${d.toDateString() === today ? " today" : ""}" data-day="${di}" style="--hh:${HH}px;height:${(H1 - H0) * HH}px">${inWeek.filter(e => e.d.toDateString() === d.toDateString()).map(e => { const top = (e.d.getHours() + e.d.getMinutes() / 60 - H0) * HH; return top < 0 || top > (H1 - H0) * HH ? "" : `<button class="ev${e.tight ? " tight" : ""}" type="button" data-id="${esc(e.it.id)}" style="--c:${col(e.it)};top:${top}px;height:${HH - 4}px;left:calc(${(e.col || 0) / (e.ncol || 1) * 100}% + 3px);width:calc(${100 / (e.ncol || 1)}% - 6px)"><span class="t">${e.d.toTimeString().slice(0, 5)}</span><span class="a">${esc(e.it.facts?.realArea || e.it.area || "?")} ${esc(moneyShort(e.it.price))}</span></button>`; }).join("")}</div>`).join("");
   $("#calGrid").innerHTML = g;
   $("#agenda").innerHTML = days.map(d => { const de = inWeek.filter(e => e.d.toDateString() === d.toDateString()); return `<div class="ag-day"><div class="ag-h"><span>${d.toLocaleDateString(loc, { weekday: "long", day: "numeric", month: "short" })}</span></div>${de.map(e => `<button class="ag-ev" type="button" data-id="${esc(e.it.id)}" style="--c:${col(e.it)}"><span class="num">${e.d.toTimeString().slice(0, 5)}</span><span><b>${esc(e.it.facts?.realArea || e.it.area || "?")}</b> ${esc(e.it.address || "")}${e.tight ? ' <span style="color:var(--warn)">tight</span>' : ""}</span><span class="num">${esc(moneyShort(e.it.price))}</span></button>`).join("") || '<div class="ag-empty">No viewings</div>'}</div>`; }).join("");
   const unsched = primaries().filter(i => i.status === "viewing" && !i.viewingAt && !i.taken);
@@ -621,7 +643,7 @@ function useServer() {
   state.mode = "server";
   const op = async body => { const r = await fetch("/api/op", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) }); const j = await r.json(); if (!j.ok) throw new Error(j.error); return j; };
   Object.assign(store, { put: l => op({ type: "put", listing: l }), del: id => op({ type: "delete", id }), comment: c => op({ type: "comment", comment: c }), uncomment: id => op({ type: "uncomment", id }), photo: async (id, b) => { const j = await op({ type: "photo", id, dataUrl: await blobToDataURL(b) }); return j.listings.find(l => l.id === id)?.photo; } });
-  setInterval(async () => { if (state.editing || drag) return; try { const j = await (await fetch("/api/state")).json(); state.items = j.listings; state.comments = j.comments; state.profile = j.profile; render(); } catch (e) { } }, 15000);
+  setInterval(async () => { if (state.editing || drag) return; try { const j = await (await fetch("/api/state")).json(); state.items = j.listings; state.comments = j.comments; state.profile = j.profile; state.lastRun = j.lastRun || null; render(); } catch (e) { } }, 15000);
 }
 async function useArtifact(claude) { // claude.ai artifact: shared live state in the artifact db
   const db = await claude.use("db"); if (!db) return false;
@@ -637,6 +659,7 @@ async function useArtifact(claude) { // claude.ai artifact: shared live state in
   });
   let got = false; const timer = setTimeout(() => { if (!got) setStatus("Still connecting to shared data…"); }, 10000);
   db.doc("meta/profile").onSnapshot(s => { if (s.exists) { state.profile = s.data(); render(); } }, () => { });
+  db.doc("meta/lastRun").onSnapshot(s => { if (s.exists) { state.lastRun = s.data(); render(); } }, () => { });
   db.collection("listings").onSnapshot(s => { got = true; clearTimeout(timer); setStatus(""); state.items = s.docs.map(d => ({ ...d.data(), id: d.id })); if (!state.editing) render(); }, e => setStatus("Shared data error: " + (e.code || e.message), true));
   db.collection("comments").onSnapshot(s => { state.comments = s.docs.map(d => ({ ...d.data(), id: d.id })); if (!state.editing) render(); else renderDrawer(); }, () => { });
   if (!state.canWrite) $("#addBtn").hidden = true;
@@ -646,7 +669,7 @@ async function useArtifact(claude) { // claude.ai artifact: shared live state in
 (async function boot() {
   prefs(false);
   const boot = typeof BOOT === "object" ? BOOT : { mode: "snapshot", profile: {}, listings: [], comments: [] };
-  state.profile = boot.profile; state.items = boot.listings || []; state.comments = boot.comments || [];
+  state.profile = boot.profile; state.items = boot.listings || []; state.comments = boot.comments || []; state.lastRun = boot.lastRun || null;
   if (boot.mode === "server") useServer();
   else if (boot.mode === "artifact" && window.claude?.use) { render(); if (!(await useArtifact(window.claude))) { state.canWrite = false; setStatus("Sign in to see the shared board", true); } }
   else useSnapshot();

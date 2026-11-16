@@ -21,8 +21,8 @@ Each country has its own transfer or stamp duty, registration, legal and conveya
 
 ## Extra facts to extract
 
-`levies`, `rates`, `sizeM2`, erf or plot size (`facts.plotM2`), the year built (`facts.built`), sectional title or freehold (`facts.tenure`), days on market and price history (cut prices signal room to negotiate), and any special levies or known defects in the description.
+`levies`, `rates`, `sizeM2`, plot or lot size (`facts.plotM2`), the year built (`facts.built`), tenure such as freehold, leasehold, condo/strata or sectional title (`facts.tenure`), days on market and price history (cut prices signal room to negotiate), and any special levies or known defects in the description.
 
 ## Lanes
 
-Apply becomes **Offer**. Before anything goes into Offer, add these to the ask list: a recent comparable sales check, the levy or HOA statement and minutes for sectional title, a building inspection, and what's included in the sale.
+Apply becomes **Offer**. Before anything goes into Offer, add these to the ask list: a recent comparable sales check, the levy, HOA or service-charge statement and meeting minutes for shared buildings, a building inspection, and what's included in the sale.

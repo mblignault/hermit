@@ -1,89 +1,137 @@
 # Home Hunt
 
-A Claude skill that runs your home search, renting or buying, in any country.
+**A Claude skill that runs your home search for you, renting or buying, in any country.**
 
-It interviews you once to learn what you actually want. It tests which listing sites it can read where you live, then scouts them on a schedule. It only brings back listings that are real and still available, each scored against your own priorities, and keeps them on a shared board you and your household can work from.
+Tell it once what you're looking for. It checks the listing sites on a schedule, keeps only listings that are real and still available, scores each one against *your* priorities, tells you what to ask the agent, and keeps everything on a board you and your household share.
 
-![Board](docs/board.png)
+![How it works: say what you want, it picks the sites, it scouts on a schedule, you decide on the board](docs/how-it-works.svg)
 
-## Why it's built this way
+![The board: listings in columns from Inbox to Apply, each with a fit score](docs/board.png)
 
-Everything here comes from a real two-person rental hunt and the mistakes it made:
+## Get started
 
-- **Verified, not scraped.** A listing reaches your board only after its own page has loaded live. Search results are full of stock that's already let, and an error page means "unverified", not "taken".
-- **Your scoring, calibrated.** You rank what matters, then show it two places you love and one you'd never take. It tunes the weights until the scores match your gut.
-- **Deal-breakers are deal-breakers.** No pets for your two medium dogs, the wrong side of a suburb you only half-like, over budget: any one of these makes a listing "no fit", however nice the kitchen.
-- **Unknowns become questions.** Most listings don't say whether pets are allowed or whether there's a garden. Those facts score in the middle, and each one becomes an "ask the agent" item. Fill in the answer and the score updates.
-- **Location means your trips.** It geocodes listings and the places you actually travel to, and fixes listings that portals file under the wrong suburb.
-- **One card per home.** The same unit gets cross-posted by several agencies with slightly different details. It links these instead of cluttering your board.
-- **Scores are never stored.** They're computed live from facts and your current settings, so they can't go stale.
+**1. Install** (pick one)
 
-## Install
-
-**Claude Code plugin**
-
-```
-/plugin marketplace add mblignault/home-hunt
-/plugin install home-hunt@home-hunt
-```
-
-**As a plain skill** (Claude Code or the Claude desktop app): copy `skills/home-hunt` into `~/.claude/skills/`, or zip that folder and upload it under Settings → Capabilities → Skills on claude.ai.
-
-You'll need Node 18+ for the helper script. It has no dependencies.
-
-## Use
-
-Say "help me find a place to live", or:
-
-| | |
+| Where | How |
 |---|---|
-| `/home-hunt setup` | First-run interview: rent or buy, budget, dates, areas, the places you travel to, must-haves, weights, calibration, sites, scout schedule and board |
-| `/home-hunt scout` | Check the sites now |
-| `/home-hunt add <link>` | Score and track one listing (a pasted description or a screenshot works too) |
-| `/home-hunt asks` | Every question to put to agents, grouped by listing |
-| `/home-hunt verify` | Re-check that every active listing is still on the market |
-| `/home-hunt settings` · `sources` · `schedule` · `status` · `board` · `export` · `reset` · `help` | |
+| Claude Code (plugin) | `/plugin marketplace add mblignault/home-hunt` then `/plugin install home-hunt@home-hunt` |
+| Claude Code or Desktop (plain skill) | Copy `skills/home-hunt` into `~/.claude/skills/` |
+| claude.ai | Zip the `skills/home-hunt` folder (the zip should contain `home-hunt/SKILL.md`) and upload it under Customize → Skills. Turn on code execution. |
+
+**2. Say** "help me find a place to live". That's it. Setup takes about 5 minutes:
+
+1. **Basics:** rent or buy, where, budget, when you need to move, who's moving and any pets.
+2. **What matters:** places you travel to often, areas you like or would never live in, must-haves and deal-breakers in your own words.
+3. **Sites:** it suggests the main listing sites for your country, tests which ones it can actually read, and shows you the result.
+4. **Schedule and board:** how often to check (daily is usual for rentals), then it runs the first scout and builds your board.
+
+Every question has a default, and you can say "skip" at any point. You can tune it later with `settings`.
+
+**3. After setup,** new listings that pass your deal-breakers land in the board's **Inbox** on schedule, and you get a short summary like this:
+
+> **3 new on the board** · [Board]
+> - **$2,250 · Riverside · 96 (strong):** 3 bed, 1 mi from Alex's office, park 0.4 mi away. Under budget, so call first.
+> - **$2,150 · Oakridge · 83 (good):** 2 bed townhouse in a top area. Ask: are 2 medium dogs OK?
+> - **$2,350 · Riverside · 76 (good):** townhouse, no patio mentioned. Ask: is there an outdoor area?
+> - Skipped: a great-looking place in Parkside that only allows small pets.
+
+Quiet days get one line ("Scout ran, nothing new: 3 sites, 7 areas, 42 checked"), so you always know it ran. The board shows when the last scout ran, too.
+
+## Where it works
+
+| | Scouting | Schedule | Board |
+|---|---|---|---|
+| **Claude Code** on your computer | ✓ | Routines, or a cron line it writes for you | Live board on your computer (`hh.js serve`) |
+| **claude.ai** with code execution | ✓ | Scheduled tasks, where available | **Shared** board your household can edit, as a private Claude artifact |
+| **Claude Desktop / Cowork** | ✓ | Scheduled tasks, where available | Shared artifact board or local board |
+| Chat with no tools | ✗ | | |
+
+It needs Node 18+ for its helper script (no dependencies), and web access to read listing sites. Without a scheduler, just say "scout" whenever you like.
+
+## What you can say
+
+You can type these after the skill's command (`/home-hunt scout` as a plain skill, `/home-hunt:home-hunt scout` as a plugin) or just ask in plain words.
+
+| Everyday | |
+|---|---|
+| `scout` | Check the sites now |
+| `add` + a link | Score one listing and put it on the board (a pasted description or screenshot works too) |
+| `questions` | Everything to ask agents, grouped by listing, ready to paste |
+| `board` | Open or rebuild the board |
+| `status` | Quick summary, including the last scout |
+
+| Tuning and admin | |
+|---|---|
+| `settings` | Change budget, dates, areas, must-haves. `settings calibrate` tunes the scoring from places you've starred |
+| `sources` | The sites it checks and how; `sources test` re-checks them |
+| `schedule` | `schedule daily 07:00`, `schedule weekdays 07:00`, `schedule off` |
+| `verify` | Re-check that everything on the board is still available |
+| `export` · `reset` · `help` | Your data as JSON or CSV · start over (backed up first) · short help |
 
 ## The board
 
-![Card detail](docs/drawer.png)
+| Card detail | On a phone |
+|---|---|
+| <img src="docs/drawer.png" alt="A card's detail: score breakdown, questions for the agent, editable facts" width="360"> | <img src="docs/phone.png" alt="The board on a phone, in dark mode" width="300"> |
 
-- **Lanes:** Inbox (New, Deciding, To contact), then Contacted, Viewing booked, Shortlist, Apply (Offer when buying) and No.
-- **Cards:** photo, live fit score, each person's star ratings (highlighted when you disagree), deal-breakers, open questions, price drops and cross-post count.
-- **Card detail:** score breakdown, what to ask the agent, editable facts, likely duplicates, comments and history.
-- **Map:** listings, your anchors and partial-area zones, with no map tiles needed. **Calendar:** your week of viewings, with back-to-back slots marked.
-- **Devices:** works on a phone, with light and dark themes.
+- **Columns:** Inbox (New, Deciding, To contact), Contacted, Viewing booked, Shortlist, Apply (Offer when buying) and No. Drag cards between them.
+- **Cards:** the fit score, deal-breakers in red, how many facts are still to confirm, price drops, and each person's own star rating after a viewing ("Alex 4★ · Sam 2★", amber when you disagree).
+- **Card detail:** why it scored what it did, with unknowns striped; what to ask the agent; and every fact, editable. Fix a fact and the score updates on the spot.
+- **One card per home:** the same place cross-posted by several agencies is linked, not repeated.
+- **Last scout** in the header shows the scout is alive.
+- **Phone:** one column per swipe, light and dark themes.
 
-There are three ways to run it:
-- **Shared live board:** a Claude artifact backed by a database. This is the one for households on claude.ai.
-- **Local live board:** `node skills/home-hunt/scripts/hh.js serve`.
-- **Read-only snapshot:** a single HTML file.
+**Map:** your listings, the places you travel to, and the part of an area you like (dashed). No map service needed.
 
-Try the demo with fictional data:
+![Map: listings with their scores, the places you travel to, and dashed rings for the part of an area you like](docs/map.png)
 
-```
-node skills/home-hunt/scripts/hh.js --dir examples/demo serve
-```
+**Calendar:** the week's viewings. Ones less than 45 minutes apart are flagged.
+
+![Calendar: the week's viewings, with back-to-back ones side by side and flagged](docs/calendar.png)
+
+Try it with fictional data: `node skills/home-hunt/scripts/hh.js demo` (it serves a temporary copy, so nothing in the repo changes). The demo pictures are illustrations; real hunts show each listing's own photo.
+
+## How scoring works
+
+Each listing gets 0–100 from your own priorities: location (your areas and your real trips), price, pets, outdoor space, entertaining, layout, property type, what's within walking distance, timing and features.
+
+- **Deal-breakers win.** No pets for your two dogs, the wrong side of an area you only half-like, over budget: any one makes a listing "no fit", however nice the kitchen.
+- **Unknown isn't no.** Most listings don't say whether pets are allowed. Unknowns score in the middle and become questions for the agent. Answer one and the score updates.
+- **Location means your trips**, not suburb names. It works out where each listing actually is, and fixes ones a site files under the wrong area.
+- **Calibrated to your gut.** Star two places you like and one you don't, and `settings calibrate` adjusts the scoring until the order matches.
+- 85+ strong · 72+ good · 58+ maybe.
+
+## Why it's built this way
+
+It comes from a real two-person rental hunt, and each rule fixes something that went wrong:
+
+- **Verified, not scraped.** A listing reaches the board only after its own page loads and looks live. Search results are full of places already let (6 of 9 in one early batch).
+- **An error isn't "taken".** Sites often refuse automated visitors while the listing is fine, so errors are retried, not treated as gone.
+- **Scores are never stored.** They're worked out live from the facts and your current settings, so they can't go stale.
+- **Don't trust one input.** Email alerts miss listings, so the scout checks the sites directly.
 
 ## Countries
 
-Packs for ZA, GB, US, CA, AU, NZ, IE, DE, NL, FR, ES, PT, IT, AE, IN and SG cover portals, currency, units, rent period (weekly in AU and NZ, yearly in the UAE), affordability rules of thumb, buying costs to look up, and local vocabulary ("let agreed", "SSTC", "Kaltmiete", "braai"). Setup tests every site live, so a pack never claims a site works without checking.
+Packs for 🇿🇦 ZA · 🇬🇧 GB · 🇺🇸 US · 🇨🇦 CA · 🇦🇺 AU · 🇳🇿 NZ · 🇮🇪 IE · 🇩🇪 DE · 🇳🇱 NL · 🇫🇷 FR · 🇪🇸 ES · 🇵🇹 PT · 🇮🇹 IT · 🇦🇪 AE · 🇮🇳 IN · 🇸🇬 SG list the main portals, currency, units, how rent is quoted (weekly in AU and NZ), affordability rules of thumb and local terms ("let agreed", "SSTC", "Kaltmiete").
 
-South Africa is field-tested. The other packs need a real hunt, and PRs with tested search URLs are welcome.
+Only South Africa has been used on a real hunt so far. For the others, setup tests every site live before relying on it. PRs with tested search URLs are welcome.
 
 ## Privacy
 
-Your hunt stays in your workspace folder, which ignores itself in git. This repo contains only fictional examples. `tools/privacy-scan.js` blocks commits containing emails, phone numbers, ID numbers, real listing URLs, or any term in your local `.privacy-denylist`. CI runs it on every push.
+- **Local board:** your hunt stays in a folder on your computer that tells git to ignore it.
+- **Shared board:** your data lives in a private Claude artifact. Only people you share it with can see it, and they see all of it, including your budget (and, when buying, your income).
+- This repo contains only fictional examples. `tools/privacy-scan.js` blocks commits containing emails, phone numbers, ID numbers, real listing links, or any term from your personal word list (kept outside the repo, in `~/.config/home-hunt/privacy-denylist`). CI runs it on every push.
 
 ## Respecting sites
 
-The scout reads at a human pace, within a per-run budget, and never bypasses captchas, logins or bot walls. A site that can't be read becomes "use your browser", "email alerts" or "paste it in".
+The scout reads at a human pace, within a per-run limit, and never gets around captchas, logins or bot walls. A site it can't read becomes "use your browser", "forward the email alerts" or "paste it in".
 
 ## Develop
 
 ```
 npm test        # scorer and CLI tests
 npm run check   # privacy scan + tests
+npm run demo    # the demo board
 ```
 
 MIT licence.

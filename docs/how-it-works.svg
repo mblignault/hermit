@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 230" width="960" height="230" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif" role="img" aria-label="How Home Hunt works: 1 say what you want, 2 it checks which sites it can read, 3 it scouts on a schedule, 4 you decide on the board">
+  <style>
+    .box{fill:#f4f7fb;stroke:#d5dfeb}
+    .n{fill:#1769e0}
+    .nt{fill:#fff;font-weight:700;font-size:15px}
+    .h{fill:#0f1b2b;font-weight:700;font-size:16px}
+    .t{fill:#4a5a70;font-size:13px}
+    .a{stroke:#9fb2c8;stroke-width:2;fill:none}
+    .ah{fill:#9fb2c8}
+    .loop{stroke:#1769e0;stroke-width:1.5;fill:none;stroke-dasharray:5 4}
+    .lt{fill:#1769e0;font-size:12px;font-weight:600}
+    @media (prefers-color-scheme: dark){
+      .box{fill:#17222f;stroke:#2b3a4d}
+      .n{fill:#5a9cff}
+      .nt{fill:#0d1520}
+      .h{fill:#e8eef6}
+      .t{fill:#a3b2c5}
+      .a{stroke:#4d6178}.ah{fill:#4d6178}
+      .loop{stroke:#5a9cff}.lt{fill:#5a9cff}
+    }
+  </style>
+  <defs><marker id="m" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0 10 5 0 10z"/></marker></defs>
+
+  <g transform="translate(10 20)">
+    <rect class="box" width="210" height="150" rx="14"/>
+    <circle class="n" cx="28" cy="30" r="14"/><text class="nt" x="28" y="35" text-anchor="middle">1</text>
+    <text class="h" x="50" y="35">Say what you want</text>
+    <text class="t" x="18" y="66">Rent or buy, budget, dates,</text>
+    <text class="t" x="18" y="84">areas, the trips you make,</text>
+    <text class="t" x="18" y="102">pets and must-haves.</text>
+    <text class="t" x="18" y="128">About 5 minutes, once.</text>
+  </g>
+  <path class="a" d="M226 95h22" marker-end="url(#m)"/>
+
+  <g transform="translate(254 20)">
+    <rect class="box" width="210" height="150" rx="14"/>
+    <circle class="n" cx="28" cy="30" r="14"/><text class="nt" x="28" y="35" text-anchor="middle">2</text>
+    <text class="h" x="50" y="35">It picks the sites</text>
+    <text class="t" x="18" y="66">Works out your country and</text>
+    <text class="t" x="18" y="84">tests which listing sites it</text>
+    <text class="t" x="18" y="102">can actually read.</text>
+    <text class="t" x="18" y="128">You confirm them.</text>
+  </g>
+  <path class="a" d="M470 95h22" marker-end="url(#m)"/>
+
+  <g transform="translate(498 20)">
+    <rect class="box" width="210" height="150" rx="14"/>
+    <circle class="n" cx="28" cy="30" r="14"/><text class="nt" x="28" y="35" text-anchor="middle">3</text>
+    <text class="h" x="50" y="35">It scouts</text>
+    <text class="t" x="18" y="66">Checks each listing is still</text>
+    <text class="t" x="18" y="84">live, drops duplicates, and</text>
+    <text class="t" x="18" y="102">scores it 0–100 for you.</text>
+    <text class="t" x="18" y="128">Lists what to ask the agent.</text>
+  </g>
+  <path class="a" d="M714 95h22" marker-end="url(#m)"/>
+
+  <g transform="translate(742 20)">
+    <rect class="box" width="208" height="150" rx="14"/>
+    <circle class="n" cx="28" cy="30" r="14"/><text class="nt" x="28" y="35" text-anchor="middle">4</text>
+    <text class="h" x="50" y="35">You decide</text>
+    <text class="t" x="18" y="66">On a shared board: move</text>
+    <text class="t" x="18" y="84">cards, rate them, comment,</text>
+    <text class="t" x="18" y="102">book viewings.</text>
+    <text class="t" x="18" y="128">Phone or desktop.</text>
+  </g>
+
+  <path class="loop" d="M846 176v22H603v-22" marker-end="url(#m)"/>
+  <text class="lt" x="724" y="216" text-anchor="middle">every day (or your schedule): new listings land in the Inbox</text>
+</svg>
