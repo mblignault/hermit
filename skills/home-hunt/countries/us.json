@@ -1,0 +1,121 @@
+{
+  "code": "US",
+  "name": "United States",
+  "currency": "USD",
+  "locale": "en-US",
+  "units": "sqft (convert to m²: ×0.0929)",
+  "rentPeriod": "month",
+  "portals": [
+    {
+      "name": "Zillow",
+      "domain": "zillow.com",
+      "role": "primary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested",
+      "idPrefix": "zl"
+    },
+    {
+      "name": "Realtor.com",
+      "domain": "realtor.com",
+      "role": "primary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested",
+      "idPrefix": "rdc"
+    },
+    {
+      "name": "Redfin",
+      "domain": "redfin.com",
+      "role": "primary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested",
+      "idPrefix": "rf"
+    },
+    {
+      "name": "Apartments.com",
+      "domain": "apartments.com",
+      "role": "primary",
+      "kinds": [
+        "rent"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "Trulia",
+      "domain": "trulia.com",
+      "role": "secondary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "HotPads",
+      "domain": "hotpads.com",
+      "role": "secondary",
+      "kinds": [
+        "rent"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "Zumper",
+      "domain": "zumper.com",
+      "role": "secondary",
+      "kinds": [
+        "rent"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "Craigslist",
+      "domain": "craigslist.org",
+      "role": "classifieds",
+      "kinds": [
+        "rent"
+      ],
+      "notes": "Watch for scams: never pay before seeing a place.",
+      "access": "untested"
+    },
+    {
+      "name": "Facebook Marketplace",
+      "domain": "facebook.com",
+      "role": "classifieds",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "manual"
+    }
+  ],
+  "affordability": {
+    "rent": "Many landlords want gross monthly income of at least 3× rent (some cities use 40× annual). Expect application fees and a credit check.",
+    "buy": "Watch the debt-to-income ratio (often ≤ 36–43%); under 20% down usually adds PMI."
+  },
+  "buy": {
+    "upfrontCosts": [
+      "closing costs (often a few % of price; check local)",
+      "property tax",
+      "HOA fees",
+      "PMI if under 20% down",
+      "inspection"
+    ]
+  },
+  "vocabulary": {
+    "pending / contingent": "under contract: treat as taken",
+    "off market": "taken",
+    "HOA": "homeowners' association fee (facts.levies)",
+    "broker fee": "tenant-paid agent fee in some cities"
+  },
+  "agencies": [],
+  "note": "Portal names are a starting point. Access is 'untested' until setup tests it live. Never assume a URL pattern works: find a real search page and confirm."
+}

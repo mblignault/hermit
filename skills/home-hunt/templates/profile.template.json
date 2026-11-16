@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "title": "Our home hunt",
+  "mode": "rent",
+  "country": "",
+  "currency": "",
+  "locale": "",
+  "household": {
+    "people": [{ "id": "p1", "name": "" }],
+    "pets": []
+  },
+  "budget": { "ideal": null, "max": null },
+  "finance": { "monthlyNetIncome": null, "deposit": null, "ratePct": null, "termYears": 20, "maxShare": 0.3 },
+  "moveIn": { "earliest": null, "latest": null, "hardLatest": null },
+  "areas": [],
+  "excludeAreas": [],
+  "outsideAreas": "score-zero",
+  "anchors": [],
+  "nearby": [],
+  "requirements": {
+    "types": { "preferred": [], "acceptable": [], "excluded": [] },
+    "beds": { "min": null, "ideal": null },
+    "baths": { "min": null, "ideal": null },
+    "sizeM2": { "min": null, "ideal": null },
+    "outdoor": "nice",
+    "entertain": "nice",
+    "features": {}
+  },
+  "weights": { "location": 20, "price": 15, "pets": 10, "outdoor": 10, "entertain": 10, "layout": 13, "type": 8, "nearby": 6, "timing": 5, "features": 3 },
+  "bands": { "strong": 85, "good": 72, "maybe": 58 },
+  "calibration": { "liked": [], "disliked": [], "notes": "" }
+}

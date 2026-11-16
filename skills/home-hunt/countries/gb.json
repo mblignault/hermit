@@ -1,0 +1,97 @@
+{
+  "code": "GB",
+  "name": "United Kingdom",
+  "currency": "GBP",
+  "locale": "en-GB",
+  "units": "sqft (convert to m²: ×0.0929)",
+  "rentPeriod": "month (pcm); some listings quote per week (pw): convert ×52/12",
+  "portals": [
+    {
+      "name": "Rightmove",
+      "domain": "rightmove.co.uk",
+      "role": "primary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested",
+      "idPrefix": "rm"
+    },
+    {
+      "name": "Zoopla",
+      "domain": "zoopla.co.uk",
+      "role": "primary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested",
+      "idPrefix": "zp"
+    },
+    {
+      "name": "OnTheMarket",
+      "domain": "onthemarket.com",
+      "role": "primary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested",
+      "idPrefix": "otm"
+    },
+    {
+      "name": "OpenRent",
+      "domain": "openrent.co.uk",
+      "role": "secondary",
+      "kinds": [
+        "rent"
+      ],
+      "notes": "Landlord-direct rentals.",
+      "access": "untested",
+      "idPrefix": "or"
+    },
+    {
+      "name": "SpareRoom",
+      "domain": "spareroom.co.uk",
+      "role": "secondary",
+      "kinds": [
+        "rent"
+      ],
+      "notes": "Rooms and flatshares.",
+      "access": "untested"
+    },
+    {
+      "name": "Gumtree",
+      "domain": "gumtree.com",
+      "role": "classifieds",
+      "kinds": [
+        "rent"
+      ],
+      "access": "untested"
+    }
+  ],
+  "affordability": {
+    "rent": "Referencing commonly requires annual income of at least 30× the monthly rent (or a guarantor at ~36×). In England deposits are capped at 5 weeks' rent (under £50k/yr) and holding deposits at 1 week.",
+    "buy": "Lenders typically offer ~4–4.5× income; get a mortgage in principle first."
+  },
+  "buy": {
+    "upfrontCosts": [
+      "Stamp Duty Land Tax (England & NI) / LBTT (Scotland) / LTT (Wales): check current bands",
+      "conveyancing",
+      "survey",
+      "mortgage arrangement fee"
+    ]
+  },
+  "vocabulary": {
+    "let agreed": "taken",
+    "under offer": "taken (buy), offer accepted",
+    "SSTC": "sold subject to contract: taken",
+    "pcm": "per calendar month",
+    "council tax band": "local tax band (add to monthly cost)",
+    "EPC": "energy rating",
+    "leasehold": "check lease length, service charge and ground rent",
+    "chain free": "seller isn't buying onward"
+  },
+  "agencies": [],
+  "note": "Portal names are a starting point. Access is 'untested' until setup tests it live. Never assume a URL pattern works: find a real search page and confirm."
+}

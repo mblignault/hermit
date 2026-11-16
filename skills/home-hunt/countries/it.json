@@ -1,0 +1,59 @@
+{
+  "code": "IT",
+  "name": "Italy",
+  "currency": "EUR",
+  "locale": "it-IT",
+  "units": "m2",
+  "rentPeriod": "month",
+  "portals": [
+    {
+      "name": "Immobiliare.it",
+      "domain": "immobiliare.it",
+      "role": "primary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "Idealista",
+      "domain": "idealista.it",
+      "role": "primary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "Casa.it",
+      "domain": "casa.it",
+      "role": "secondary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "Subito",
+      "domain": "subito.it",
+      "role": "classifieds",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    }
+  ],
+  "buy": {
+    "upfrontCosts": [
+      "registration tax / VAT",
+      "notary",
+      "agency fee"
+    ]
+  },
+  "agencies": [],
+  "note": "Portal names are a starting point. Access is 'untested' until setup tests it live. Never assume a URL pattern works: find a real search page and confirm."
+}

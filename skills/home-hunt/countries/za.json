@@ -1,0 +1,241 @@
+{
+  "code": "ZA",
+  "name": "South Africa",
+  "currency": "ZAR",
+  "locale": "en-ZA",
+  "units": "m2",
+  "rentPeriod": "month",
+  "packStatus": "field-tested (a 2026 rental hunt)",
+  "portals": [
+    {
+      "name": "Property24",
+      "domain": "property24.com",
+      "role": "primary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "notes": "Largest portal. Search pages are readable; detail pages intermittently return server errors to automated readers while still live (treat as unverified, retry). Price-filter query strings tend to error: read unfiltered pages and filter by hand.",
+      "access": "fetch",
+      "idPrefix": "p24",
+      "searchUrl": "https://www.property24.com/{houses|townhouses|apartments}-to-rent/{suburb-slug}/{city-slug}/{province-slug}/{suburbId}  (for-sale: -for-sale-; find suburbId from the site's own suburb pages)",
+      "detailPattern": "/to-rent/{suburb}/{city}/{province}/{suburbId}/{listingId}",
+      "delisted": "HTTP 404 with 'no longer available on Property24' (title and photo may still show)",
+      "images": "images.prop24.com/{imageId}/Crop600x400"
+    },
+    {
+      "name": "Private Property",
+      "domain": "privateproperty.co.za",
+      "role": "primary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "notes": "Second portal and the only home of many private-landlord ('Listed privately') listings. Archived listings return HTTP 200 and redirect to the suburb search with ?archiveId=…: check the final URL still contains the listing id.",
+      "access": "fetch",
+      "idPrefix": "pp",
+      "searchUrl": "https://www.privateproperty.co.za/{houses|townhouses}-to-rent/{suburb-slug}/{suburbId}?page=N",
+      "detailPattern": "…/RR{number} (rentals); any slug before the id redirects to the canonical URL"
+    },
+    {
+      "name": "MyProperty",
+      "domain": "myproperty.co.za",
+      "role": "secondary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "notes": "Carries some stock not on the two big portals. Off-market listings show 'off the market'.",
+      "access": "fetch",
+      "idPrefix": "mp",
+      "searchUrl": "https://www.myproperty.co.za/en-za/to-rent/{province}/{city}/{suburb}/ (also /house/ and /townhouse/ type pages)"
+    },
+    {
+      "name": "property.mg.co.za",
+      "domain": "property.mg.co.za",
+      "role": "mirror",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "notes": "Mirror of Property24 listings with the same listing ids. Useful when a Property24 search page errors.",
+      "access": "fetch",
+      "searchUrl": "https://property.mg.co.za/property-to-rent-in-{suburb}-s{p24SuburbId}"
+    },
+    {
+      "name": "Gumtree",
+      "domain": "gumtree.co.za",
+      "role": "classifieds",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "notes": "Blocks cloud sandboxes; readable from the user's own machine or browser. Mostly flats and rooms.",
+      "access": "browser"
+    },
+    {
+      "name": "Facebook groups and Marketplace",
+      "domain": "facebook.com",
+      "role": "classifieds",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "notes": "Needs a login and isn't indexed. Ask the user to paste finds.",
+      "access": "manual"
+    }
+  ],
+  "agencies": [
+    {
+      "name": "Pam Golding",
+      "domain": "pamgolding.co.za",
+      "role": "agency",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "notes": "Rental search pages readable.",
+      "access": "fetch",
+      "idPrefix": "pg"
+    },
+    {
+      "name": "Chas Everitt",
+      "domain": "chaseveritt.co.za",
+      "role": "agency",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "notes": "/results/residential/to-let/{city}/{suburb}/ readable.",
+      "access": "fetch",
+      "idPrefix": "ce"
+    },
+    {
+      "name": "Jawitz",
+      "domain": "jawitz.co.za",
+      "role": "agency",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "notes": "/results/residential/to-let/{city}/{suburb}/ readable.",
+      "access": "fetch",
+      "idPrefix": "jw"
+    },
+    {
+      "name": "RE/MAX",
+      "domain": "remax.co.za",
+      "role": "agency",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "Seeff",
+      "domain": "seeff.com",
+      "role": "agency",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "Rawson",
+      "domain": "rawson.co.za",
+      "role": "agency",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "Harcourts",
+      "domain": "harcourts.co.za",
+      "role": "agency",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "Lew Geffen Sotheby's",
+      "domain": "sothebysrealty.co.za",
+      "role": "agency",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "Tyson Properties",
+      "domain": "tysonprop.co.za",
+      "role": "agency",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "Engel & Völkers",
+      "domain": "engelvoelkers.com",
+      "role": "agency",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "Century 21",
+      "domain": "century21.co.za",
+      "role": "agency",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    }
+  ],
+  "affordability": {
+    "rent": "Landlords and agents usually want gross household income of at least 3× the rent, plus a credit check (e.g. TPN). Deposit is typically 1–2 months' rent.",
+    "buy": "Banks look at repayment-to-income (often up to ~30% of gross) and credit record; a bond originator can compare banks."
+  },
+  "applicationDocs": [
+    "ID copies",
+    "3 months' payslips",
+    "3 months' bank statements",
+    "proof of current address",
+    "employment letter or contract for new jobs"
+  ],
+  "buy": {
+    "upfrontCosts": [
+      "transfer duty (SARS sliding scale, check the current year's table)",
+      "transfer attorney fees",
+      "bond registration attorney fees",
+      "bond initiation fee"
+    ]
+  },
+  "vocabulary": {
+    "braai": "barbecue (entertain: covered_patio_bbq)",
+    "levies": "monthly complex/body-corporate fee",
+    "bond": "mortgage",
+    "erf": "plot of land",
+    "sectional title": "unit in a scheme with a body corporate",
+    "occupation": "move-in date",
+    "pet friendly": "often means small pets: confirm size",
+    "inverter / solar": "backup power for load-shedding (features.backupPower)",
+    "lock-up-and-go": "secure, low-maintenance unit"
+  },
+  "quirks": [
+    "Portals sometimes file a listing under the wrong suburb (an estate shown under the nearest business node): set facts.realArea.",
+    "Cross-posting is heavy: the same unit appears via several agencies with different wording and bay counts."
+  ],
+  "note": "Portal names are a starting point. Access is 'untested' until setup tests it live. Never assume a URL pattern works: find a real search page and confirm."
+}

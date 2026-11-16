@@ -1,0 +1,58 @@
+{
+  "code": "NL",
+  "name": "Netherlands",
+  "currency": "EUR",
+  "locale": "nl-NL",
+  "units": "m2",
+  "rentPeriod": "month",
+  "portals": [
+    {
+      "name": "Funda",
+      "domain": "funda.nl",
+      "role": "primary",
+      "kinds": [
+        "buy",
+        "rent"
+      ],
+      "access": "untested",
+      "idPrefix": "funda"
+    },
+    {
+      "name": "Pararius",
+      "domain": "pararius.nl",
+      "role": "primary",
+      "kinds": [
+        "rent"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "Kamernet",
+      "domain": "kamernet.nl",
+      "role": "secondary",
+      "kinds": [
+        "rent"
+      ],
+      "notes": "Rooms.",
+      "access": "untested"
+    }
+  ],
+  "affordability": {
+    "rent": "Landlords commonly ask for gross income of 3–4× rent.",
+    "buy": "Mortgage limits follow NIBUD income norms."
+  },
+  "buy": {
+    "upfrontCosts": [
+      "overdrachtsbelasting (transfer tax: check current rate and starter exemption)",
+      "notary",
+      "valuation",
+      "mortgage advice"
+    ]
+  },
+  "vocabulary": {
+    "verhuurd / verkocht onder voorbehoud": "taken",
+    "kale huur": "rent excl. service costs"
+  },
+  "agencies": [],
+  "note": "Portal names are a starting point. Access is 'untested' until setup tests it live. Never assume a URL pattern works: find a real search page and confirm."
+}

@@ -1,0 +1,66 @@
+{
+  "code": "IE",
+  "name": "Ireland",
+  "currency": "EUR",
+  "locale": "en-IE",
+  "units": "m2",
+  "rentPeriod": "month",
+  "portals": [
+    {
+      "name": "Daft.ie",
+      "domain": "daft.ie",
+      "role": "primary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested",
+      "idPrefix": "daft"
+    },
+    {
+      "name": "MyHome.ie",
+      "domain": "myhome.ie",
+      "role": "primary",
+      "kinds": [
+        "buy",
+        "rent"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "Rent.ie",
+      "domain": "rent.ie",
+      "role": "secondary",
+      "kinds": [
+        "rent"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "Property.ie",
+      "domain": "property.ie",
+      "role": "secondary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    }
+  ],
+  "affordability": {
+    "rent": "Demand is very high: have references and documents ready before viewing.",
+    "buy": "Central Bank lending limits apply (loan-to-income and LTV)."
+  },
+  "buy": {
+    "upfrontCosts": [
+      "stamp duty (check current rate)",
+      "solicitor",
+      "survey"
+    ]
+  },
+  "vocabulary": {
+    "sale agreed": "taken"
+  },
+  "agencies": [],
+  "note": "Portal names are a starting point. Access is 'untested' until setup tests it live. Never assume a URL pattern works: find a real search page and confirm."
+}

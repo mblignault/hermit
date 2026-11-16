@@ -1,0 +1,16 @@
+name: ci
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node tools/privacy-scan.js
+      - run: node --test tests/*.test.js
+      - run: |
+          for f in skills/home-hunt/countries/*.json examples/demo/*.json .claude-plugin/*.json skills/home-hunt/templates/*.json; do node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))" || exit 1; done

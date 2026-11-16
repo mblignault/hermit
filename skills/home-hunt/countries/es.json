@@ -1,0 +1,58 @@
+{
+  "code": "ES",
+  "name": "Spain",
+  "currency": "EUR",
+  "locale": "es-ES",
+  "units": "m2",
+  "rentPeriod": "month",
+  "portals": [
+    {
+      "name": "Idealista",
+      "domain": "idealista.com",
+      "role": "primary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "Fotocasa",
+      "domain": "fotocasa.es",
+      "role": "primary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "Habitaclia",
+      "domain": "habitaclia.com",
+      "role": "secondary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "pisos.com",
+      "domain": "pisos.com",
+      "role": "secondary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    }
+  ],
+  "buy": {
+    "upfrontCosts": [
+      "ITP (resale, regional) or IVA (new build)",
+      "notary and registry"
+    ]
+  },
+  "agencies": [],
+  "note": "Portal names are a starting point. Access is 'untested' until setup tests it live. Never assume a URL pattern works: find a real search page and confirm."
+}

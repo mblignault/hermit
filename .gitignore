@@ -1,0 +1,5 @@
+node_modules/
+.privacy-denylist
+/home-hunt/
+*.tmp
+.DS_Store

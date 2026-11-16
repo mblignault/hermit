@@ -1,0 +1,53 @@
+{
+  "code": "NZ",
+  "name": "New Zealand",
+  "currency": "NZD",
+  "locale": "en-NZ",
+  "units": "m2",
+  "rentPeriod": "week",
+  "portals": [
+    {
+      "name": "Trade Me Property",
+      "domain": "trademe.co.nz",
+      "role": "primary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested",
+      "idPrefix": "tm"
+    },
+    {
+      "name": "realestate.co.nz",
+      "domain": "realestate.co.nz",
+      "role": "primary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "OneRoof",
+      "domain": "oneroof.co.nz",
+      "role": "secondary",
+      "kinds": [
+        "buy"
+      ],
+      "access": "untested"
+    }
+  ],
+  "affordability": {
+    "rent": "Bond is capped at 4 weeks' rent.",
+    "buy": "Check the LVR rules for your deposit size."
+  },
+  "buy": {
+    "upfrontCosts": [
+      "legal/conveyancing",
+      "LIM report",
+      "building inspection"
+    ]
+  },
+  "agencies": [],
+  "note": "Portal names are a starting point. Access is 'untested' until setup tests it live. Never assume a URL pattern works: find a real search page and confirm."
+}

@@ -1,0 +1,62 @@
+{
+  "code": "IN",
+  "name": "India",
+  "currency": "INR",
+  "locale": "en-IN",
+  "units": "sqft (convert ×0.0929)",
+  "rentPeriod": "month",
+  "portals": [
+    {
+      "name": "MagicBricks",
+      "domain": "magicbricks.com",
+      "role": "primary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "99acres",
+      "domain": "99acres.com",
+      "role": "primary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "Housing.com",
+      "domain": "housing.com",
+      "role": "primary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "NoBroker",
+      "domain": "nobroker.in",
+      "role": "secondary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "notes": "Owner-direct listings.",
+      "access": "untested"
+    }
+  ],
+  "affordability": {
+    "rent": "Security deposits vary widely by city (from 2 to 10 months' rent): put it in facts.notes."
+  },
+  "buy": {
+    "upfrontCosts": [
+      "stamp duty and registration (state-based)",
+      "GST on under-construction property"
+    ]
+  },
+  "agencies": [],
+  "note": "Portal names are a starting point. Access is 'untested' until setup tests it live. Never assume a URL pattern works: find a real search page and confirm."
+}

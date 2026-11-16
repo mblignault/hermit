@@ -1,0 +1,67 @@
+{
+  "code": "FR",
+  "name": "France",
+  "currency": "EUR",
+  "locale": "fr-FR",
+  "units": "m2",
+  "rentPeriod": "month",
+  "portals": [
+    {
+      "name": "SeLoger",
+      "domain": "seloger.com",
+      "role": "primary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "Leboncoin",
+      "domain": "leboncoin.fr",
+      "role": "classifieds",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "PAP",
+      "domain": "pap.fr",
+      "role": "secondary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "notes": "Private owner to private person.",
+      "access": "untested"
+    },
+    {
+      "name": "Bien'ici",
+      "domain": "bienici.com",
+      "role": "primary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    }
+  ],
+  "affordability": {
+    "rent": "Landlords usually want net income ≥ 3× rent, a full dossier, and often a garant (or Visale).",
+    "buy": "Add notary fees to the price."
+  },
+  "buy": {
+    "upfrontCosts": [
+      "frais de notaire (higher for older property)",
+      "bank fees"
+    ]
+  },
+  "vocabulary": {
+    "CC": "charges comprises (incl. service charges)",
+    "HC": "hors charges"
+  },
+  "agencies": [],
+  "note": "Portal names are a starting point. Access is 'untested' until setup tests it live. Never assume a URL pattern works: find a real search page and confirm."
+}

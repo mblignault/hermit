@@ -1,0 +1,70 @@
+{
+  "code": "DE",
+  "name": "Germany",
+  "currency": "EUR",
+  "locale": "de-DE",
+  "units": "m2",
+  "rentPeriod": "month",
+  "portals": [
+    {
+      "name": "ImmobilienScout24",
+      "domain": "immobilienscout24.de",
+      "role": "primary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested",
+      "idPrefix": "is24"
+    },
+    {
+      "name": "Immowelt",
+      "domain": "immowelt.de",
+      "role": "primary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "Kleinanzeigen",
+      "domain": "kleinanzeigen.de",
+      "role": "classifieds",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "WG-Gesucht",
+      "domain": "wg-gesucht.de",
+      "role": "secondary",
+      "kinds": [
+        "rent"
+      ],
+      "notes": "Shared flats.",
+      "access": "untested"
+    }
+  ],
+  "affordability": {
+    "rent": "Compare Warmmiete (incl. Nebenkosten), not Kaltmiete. Landlords commonly ask for SCHUFA and income ≥ ~3× Kaltmiete. Kaution is capped at 3 months' net rent.",
+    "buy": "Budget the Nebenkosten of purchase on top of the price."
+  },
+  "buy": {
+    "upfrontCosts": [
+      "Grunderwerbsteuer (varies by state)",
+      "notary and land registry",
+      "Makler commission (if applicable)"
+    ]
+  },
+  "vocabulary": {
+    "Kaltmiete": "net rent: add Nebenkosten for the real monthly cost (facts.extraMonthly)",
+    "Warmmiete": "rent incl. service costs",
+    "Kaution": "deposit",
+    "EBK": "fitted kitchen (often not included: check)"
+  },
+  "agencies": [],
+  "note": "Portal names are a starting point. Access is 'untested' until setup tests it live. Never assume a URL pattern works: find a real search page and confirm."
+}

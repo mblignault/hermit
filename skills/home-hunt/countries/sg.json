@@ -1,0 +1,49 @@
+{
+  "code": "SG",
+  "name": "Singapore",
+  "currency": "SGD",
+  "locale": "en-SG",
+  "units": "sqft (convert ×0.0929)",
+  "rentPeriod": "month",
+  "portals": [
+    {
+      "name": "PropertyGuru",
+      "domain": "propertyguru.com.sg",
+      "role": "primary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "99.co",
+      "domain": "99.co",
+      "role": "primary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "SRX",
+      "domain": "srx.com.sg",
+      "role": "secondary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    }
+  ],
+  "buy": {
+    "upfrontCosts": [
+      "Buyer's Stamp Duty",
+      "Additional Buyer's Stamp Duty (depends on residency and count)",
+      "legal fees"
+    ]
+  },
+  "agencies": [],
+  "note": "Portal names are a starting point. Access is 'untested' until setup tests it live. Never assume a URL pattern works: find a real search page and confirm."
+}

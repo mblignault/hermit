@@ -1,0 +1,55 @@
+{
+  "code": "AE",
+  "name": "United Arab Emirates",
+  "currency": "AED",
+  "locale": "en-AE",
+  "units": "sqft (convert ×0.0929)",
+  "rentPeriod": "year: rents are quoted annually and often paid in several cheques",
+  "portals": [
+    {
+      "name": "Bayut",
+      "domain": "bayut.com",
+      "role": "primary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "Property Finder",
+      "domain": "propertyfinder.ae",
+      "role": "primary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "Dubizzle",
+      "domain": "dubizzle.com",
+      "role": "classifieds",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    }
+  ],
+  "affordability": {
+    "rent": "Fewer cheques usually cost more; ask about the cheque count."
+  },
+  "buy": {
+    "upfrontCosts": [
+      "land department transfer fee (check current)",
+      "agency commission",
+      "mortgage registration"
+    ]
+  },
+  "vocabulary": {
+    "Ejari": "tenancy registration (Dubai)"
+  },
+  "agencies": [],
+  "note": "Portal names are a starting point. Access is 'untested' until setup tests it live. Never assume a URL pattern works: find a real search page and confirm."
+}

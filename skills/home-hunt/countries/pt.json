@@ -1,0 +1,49 @@
+{
+  "code": "PT",
+  "name": "Portugal",
+  "currency": "EUR",
+  "locale": "pt-PT",
+  "units": "m2",
+  "rentPeriod": "month",
+  "portals": [
+    {
+      "name": "Idealista",
+      "domain": "idealista.pt",
+      "role": "primary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "Imovirtual",
+      "domain": "imovirtual.com",
+      "role": "primary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "Casa Sapo",
+      "domain": "casa.sapo.pt",
+      "role": "secondary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    }
+  ],
+  "buy": {
+    "upfrontCosts": [
+      "IMT",
+      "stamp duty",
+      "notary and registry"
+    ]
+  },
+  "agencies": [],
+  "note": "Portal names are a starting point. Access is 'untested' until setup tests it live. Never assume a URL pattern works: find a real search page and confirm."
+}

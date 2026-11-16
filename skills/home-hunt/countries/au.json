@@ -1,0 +1,82 @@
+{
+  "code": "AU",
+  "name": "Australia",
+  "currency": "AUD",
+  "locale": "en-AU",
+  "units": "m2",
+  "rentPeriod": "week: portals quote weekly rent, so keep the profile budget weekly too",
+  "portals": [
+    {
+      "name": "realestate.com.au",
+      "domain": "realestate.com.au",
+      "role": "primary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested",
+      "idPrefix": "rea"
+    },
+    {
+      "name": "Domain",
+      "domain": "domain.com.au",
+      "role": "primary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested",
+      "idPrefix": "dom"
+    },
+    {
+      "name": "Flatmates.com.au",
+      "domain": "flatmates.com.au",
+      "role": "secondary",
+      "kinds": [
+        "rent"
+      ],
+      "notes": "Shared housing.",
+      "access": "untested"
+    },
+    {
+      "name": "Allhomes",
+      "domain": "allhomes.com.au",
+      "role": "secondary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "notes": "Strong in the ACT.",
+      "access": "untested"
+    },
+    {
+      "name": "Gumtree",
+      "domain": "gumtree.com.au",
+      "role": "classifieds",
+      "kinds": [
+        "rent"
+      ],
+      "access": "untested"
+    }
+  ],
+  "affordability": {
+    "rent": "Rent above ~30% of household income is commonly called rental stress. The bond is usually 4 weeks' rent.",
+    "buy": "Get pre-approval; lenders assess serviceability with a buffer rate."
+  },
+  "buy": {
+    "upfrontCosts": [
+      "stamp duty (state-based; first-home concessions vary)",
+      "conveyancing",
+      "building and pest inspection",
+      "LMI if under 20% deposit"
+    ]
+  },
+  "vocabulary": {
+    "leased": "taken",
+    "under contract / deposit taken": "taken",
+    "strata": "body corporate (facts.levies)",
+    "pw": "per week"
+  },
+  "agencies": [],
+  "note": "Portal names are a starting point. Access is 'untested' until setup tests it live. Never assume a URL pattern works: find a real search page and confirm."
+}

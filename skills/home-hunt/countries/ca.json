@@ -1,0 +1,80 @@
+{
+  "code": "CA",
+  "name": "Canada",
+  "currency": "CAD",
+  "locale": "en-CA",
+  "units": "sqft (convert ×0.0929)",
+  "rentPeriod": "month",
+  "portals": [
+    {
+      "name": "REALTOR.ca",
+      "domain": "realtor.ca",
+      "role": "primary",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "Rentals.ca",
+      "domain": "rentals.ca",
+      "role": "primary",
+      "kinds": [
+        "rent"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "Zumper",
+      "domain": "zumper.com",
+      "role": "secondary",
+      "kinds": [
+        "rent"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "PadMapper",
+      "domain": "padmapper.com",
+      "role": "secondary",
+      "kinds": [
+        "rent"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "Kijiji",
+      "domain": "kijiji.ca",
+      "role": "classifieds",
+      "kinds": [
+        "rent",
+        "buy"
+      ],
+      "access": "untested"
+    },
+    {
+      "name": "Facebook Marketplace",
+      "domain": "facebook.com",
+      "role": "classifieds",
+      "kinds": [
+        "rent"
+      ],
+      "access": "manual"
+    }
+  ],
+  "affordability": {
+    "rent": "A common landlord rule is rent ≤ ~30–33% of gross income.",
+    "buy": "Lenders apply a mortgage stress test; get pre-approved."
+  },
+  "buy": {
+    "upfrontCosts": [
+      "land transfer tax (provincial, some cities add their own)",
+      "legal fees",
+      "inspection",
+      "CMHC insurance if under 20% down"
+    ]
+  },
+  "agencies": [],
+  "note": "Portal names are a starting point. Access is 'untested' until setup tests it live. Never assume a URL pattern works: find a real search page and confirm."
+}

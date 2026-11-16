@@ -1,0 +1,3 @@
+#!/bin/sh
+# Install: ln -s ../../tools/pre-commit .git/hooks/pre-commit
+exec node "$(git rev-parse --show-toplevel)/tools/privacy-scan.js"

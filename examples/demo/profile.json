@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "title": "Lakeview Rental Hunt",
+  "mode": "rent",
+  "country": "US",
+  "currency": "USD",
+  "locale": "en-US",
+  "household": {
+    "people": [{ "id": "a", "name": "Alex" }, { "id": "b", "name": "Sam" }],
+    "pets": [{ "kind": "dog", "size": "medium", "count": 2 }]
+  },
+  "budget": { "ideal": 2300, "max": 2600 },
+  "moveIn": { "earliest": "2027-03-01", "latest": "2027-04-01", "hardLatest": "2027-04-30" },
+  "areas": [
+    { "name": "Riverside", "tier": 1 },
+    { "name": "Oakridge", "tier": 1, "zone": { "label": "the river side, south of Elm Ave", "center": [45.512, 10.018], "radiusKm": 1.2 } },
+    { "name": "Parkside", "tier": 2 },
+    { "name": "Hillcrest", "tier": 4, "valueMax": 2100, "zone": { "label": "the edge next to Parkside", "center": [45.535, 10.03], "radiusKm": 1.0 } },
+    { "name": "Mill Town", "tier": 5 }
+  ],
+  "excludeAreas": ["Northgate"],
+  "anchors": [
+    { "id": "work-a", "label": "Alex's office", "lat": 45.50, "lng": 10.045, "idealKm": 6, "maxKm": 18 },
+    { "id": "work-b", "label": "Sam's office", "lat": 45.53, "lng": 10.07, "idealKm": 8, "maxKm": 20 }
+  ],
+  "nearby": [{ "id": "local", "label": "a walkable pub or café", "idealKm": 1, "maxKm": 3 }],
+  "requirements": {
+    "types": { "preferred": ["house_in_estate", "cluster", "townhouse", "house"], "acceptable": ["cottage", "duplex", "semi"], "excluded": ["apartment", "studio", "room"] },
+    "beds": { "min": 2, "ideal": 3 },
+    "baths": { "min": 2, "ideal": 2 },
+    "sizeM2": { "min": 90, "ideal": 130 },
+    "outdoor": "must",
+    "entertain": "nice",
+    "features": { "backupPower": "nice", "fibre": "nice", "security": "nice", "furnished": "avoid" }
+  },
+  "weights": { "location": 20, "price": 15, "pets": 10, "outdoor": 10, "entertain": 10, "layout": 13, "type": 8, "nearby": 6, "timing": 5, "features": 3 },
+  "bands": { "strong": 85, "good": 72, "maybe": 58 }
+}
