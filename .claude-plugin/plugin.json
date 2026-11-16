@@ -1,10 +1,10 @@
 {
-  "name": "home-hunt",
+  "name": "hermit",
   "version": "1.0.0",
   "description": "Find a place to live, renting or buying, in any country: a first-run interview builds your scoring profile, a scheduled scout finds, verifies, scores and de-duplicates listings, and a shared board tracks them through to viewing and applying.",
   "author": { "name": "mblignault", "url": "https://github.com/mblignault" },
-  "homepage": "https://github.com/mblignault/home-hunt",
-  "repository": "https://github.com/mblignault/home-hunt",
+  "homepage": "https://github.com/mblignault/hermit",
+  "repository": "https://github.com/mblignault/hermit",
   "license": "MIT",
   "keywords": ["home", "rental", "real-estate", "house-hunting", "property", "kanban", "scout"]
 }

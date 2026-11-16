@@ -1,9 +1,9 @@
 {
-  "name": "home-hunt",
+  "name": "hermit",
   "owner": { "name": "mblignault" },
   "plugins": [
     {
-      "name": "home-hunt",
+      "name": "hermit",
       "source": "./",
       "description": "Find a place to live, renting or buying, in any country: profile interview, scored and verified listings, scheduled scout, shared board."
     }

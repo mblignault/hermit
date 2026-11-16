@@ -1,4 +1,4 @@
-// home-hunt scorer. Pure function, no dependencies, runs in Node and in the board page.
+// hermit scorer. Pure function, no dependencies, runs in Node and in the board page.
 //
 // scoreListing(listing, profile) -> {
 //   score 0-100, band, parts{key:{pts,max,frac,note}}, gates[], flags[], ask[], confidence 0-1, rubric

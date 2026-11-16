@@ -34,7 +34,7 @@ Buy mode adds a repayment check to price: monthly repayment plus levies and rate
   "mode": "rent",                       // rent | buy
   "country": "US", "currency": "USD", "locale": "en-US",
   "units": "imperial",                  // metric | imperial: display only, data is always km and m²
-  "household": { "people": [{ "id": "a", "name": "Alex" }], "pets": [{ "kind": "dog", "size": "medium", "count": 2 }] },
+  "household": { "people": [{ "id": "a", "name": "Alex" }, { "id": "s", "name": "Sam" }, { "id": "jo", "name": "Jo", "role": "helper" }], "pets": [{ "kind": "dog", "size": "medium", "count": 2 }] },   // role "helper": comments and moves cards, no star rating
   "budget": { "ideal": 2300, "max": 2600 },          // rent per period the portals use; buy = price
   "finance": { "monthlyNetIncome": null, "deposit": null, "ratePct": null, "termYears": 20, "maxShare": 0.3 },
   "moveIn": { "earliest": "2027-03-01", "latest": "2027-04-01", "hardLatest": "2027-04-30" },
@@ -78,7 +78,7 @@ Buy mode adds a repayment check to price: monthly repayment plus levies and rate
 
 When the scores feel wrong, don't hand-edit numbers at random:
 1. Ask which listing is scored wrong, and which way.
-2. Run `hh.js score <id> --explain` and find the part responsible.
+2. Run `hermit.js score <id> --explain` and find the part responsible.
 3. Fix the cause: a missing gate, a wrong tier or zone, a weight, or a wrong fact on the listing (that's the most common cause).
 4. Re-score all the calibration listings. The fix mustn't break the ones that were already right.
 5. Report the before and after in one line each.

@@ -1,9 +1,9 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const path = require("path");
-const { scoreListing, dupLikelihood, monthlyRepayment } = require("../skills/home-hunt/scripts/score.js");
-const profile = require("../skills/home-hunt/examples/demo/profile.json");
-const { listings } = require("../skills/home-hunt/examples/demo/listings.json");
+const { scoreListing, dupLikelihood, monthlyRepayment } = require("../skills/hermit/scripts/score.js");
+const profile = require("../skills/hermit/examples/demo/profile.json");
+const { listings } = require("../skills/hermit/examples/demo/listings.json");
 const TODAY = { today: "2027-02-01" };
 const byId = id => listings.find(l => l.id === id);
 const s = (l, p = profile) => scoreListing(l, p, TODAY);

@@ -1,9 +1,9 @@
-<title>Home Hunt</title>
+<title>Hermit</title>
 <meta name="claude:viewport-fit-sides" content="cover"><!--__VIEWPORT__-->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
 <style>
-/* home-hunt board. One screen: header, then the Board / Map / Calendar views. Lanes scroll on their own;
+/* hermit board. One screen: header, then the Board / Map / Calendar views. Lanes scroll on their own;
    phones get one lane per swipe with lane tabs. Tokens below drive light and dark. */
 :root{
   --bg:#f2f7fa;--surface:#fff;--surface-2:#e9f1f6;--line:#d5e3eb;--fg:#0d2230;--muted:#587080;
@@ -166,6 +166,18 @@ ul.list{margin:0;padding-left:18px;font-size:12.5px}ul.list.warn{color:var(--war
 .tray{background:var(--surface);border:1px dashed var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
 .tray .list{display:flex;flex-wrap:wrap;gap:6px}.tray .list button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:12.5px;font-weight:600}
 .pop{position:fixed;z-index:25;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.2);padding:14px;width:min(340px,calc(100vw - 32px));display:flex;flex-direction:column;gap:10px}
+.whobar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line));border-radius:12px;padding:10px 12px;font-size:13.5px}
+.whobar b{margin-right:4px}.whobar .note{color:var(--muted);font-size:12.5px;flex-basis:100%}
+.whobar.ro{background:var(--warn-soft);border-color:color-mix(in srgb,var(--warn) 30%,var(--line))}
+.sheet{position:fixed;z-index:26;left:50%;top:50%;transform:translate(-50%,-50%);width:min(440px,calc(100vw - 32px));max-height:calc(100vh - 48px);overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.25);padding:20px;display:flex;flex-direction:column;gap:12px}
+.sheet h3{margin:0;font:700 18px var(--f-display)}.sheet ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}.sheet .meta{color:var(--muted);font-size:13px}
+.sheet .who-list{display:flex;flex-wrap:wrap;gap:6px}.sheet .who-list span{border-radius:999px;padding:3px 10px;font-size:12.5px;background:var(--surface-2)}.sheet .who-list span.in{background:var(--ok-soft);color:var(--ok)}
+.sheet .linkbox{display:flex;gap:8px}.sheet .linkbox input{flex:1;min-width:0;border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--bg);color:var(--fg);font-size:13px}
+.card.fresh{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft),var(--shadow)}
+.tag.new{background:var(--accent);color:var(--accent-ink)}
+.card .change{font-size:11.5px;color:var(--muted);border-top:1px dashed var(--line);padding-top:6px;margin-top:2px}
+.card.compact .change{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-top:4px}.card.compact .change .tag{font-size:10px;padding:1px 5px;margin-right:2px}
+.chip.news{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}.chip.news[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent)}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:max(16px,env(safe-area-inset-bottom));z-index:30;background:var(--fg);color:var(--bg);border-radius:12px;padding:10px 16px;display:flex;gap:10px;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.3);max-width:calc(100% - 32px);flex-wrap:wrap;font-size:13.5px}
 body.v-board .map-wrap,body.v-board .cal-wrap,body.v-map .board-wrap,body.v-map .cal-wrap,body.v-cal .board-wrap,body.v-cal .map-wrap,body:not(.v-board) .laneTabs{display:none!important}
 @media (max-width:900px){.map-grid{grid-template-columns:1fr}}
@@ -193,15 +205,17 @@ body.v-board .map-wrap,body.v-board .cal-wrap,body.v-map .board-wrap,body.v-map 
 <header>
   <div class="top">
     <div>
-      <h1><span class="mark" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"><path d="M2.5 7.5 8 3l5.5 4.5V13a.5.5 0 0 1-.5.5H9.5V10h-3v3.5H3a.5.5 0 0 1-.5-.5z"/></svg></span><span id="hTitle">Home Hunt</span></h1>
+      <h1><span class="mark" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"><path d="M2.5 7.5 8 3l5.5 4.5V13a.5.5 0 0 1-.5.5H9.5V10h-3v3.5H3a.5.5 0 0 1-.5-.5z"/></svg></span><span id="hTitle">Hermit</span></h1>
       <p class="brief" id="brief"></p>
     </div>
     <div class="actions">
       <div class="viewtog" role="group" aria-label="View"><button type="button" data-view="board" aria-pressed="true">Board</button><button type="button" data-view="map" aria-pressed="false">Map</button><button type="button" data-view="cal" aria-pressed="false">Calendar</button></div>
+      <button class="btn" id="shareBtn" type="button">Share</button>
       <button class="btn primary" id="addBtn" type="button">Add listing</button>
       <button class="btn ghost sm" id="exportBtn" type="button" hidden>Export changes</button>
     </div>
   </div>
+  <div class="whobar" id="whoBar" hidden></div>
   <div class="stats" id="stats"></div>
   <div class="filters">
     <input class="search" id="q" type="search" placeholder="Search area, agent, notes" aria-label="Search listings">
@@ -229,6 +243,7 @@ body.v-board .map-wrap,body.v-board .cal-wrap,body.v-map .board-wrap,body.v-map 
 </div>
 <div class="pop" id="pop" hidden role="dialog"></div>
 <div class="toast" id="toast" hidden role="status"></div>
+<div class="sheet" id="shareSheet" hidden role="dialog" aria-modal="true" aria-labelledby="shTitle"></div>
 <div class="scrim" id="scrim" hidden></div>
 <aside class="drawer" id="drawer" hidden role="dialog" aria-modal="true" aria-labelledby="dTitle">
   <div class="d-head"><h3 id="dTitle">Listing</h3><button class="btn ghost" id="dClose" type="button">Close</button></div>
@@ -263,7 +278,7 @@ const OPT = {
   entertain: [["unknown", "Not stated"], ["covered_patio_bbq", "Covered patio + BBQ"], ["private_pool", "Private pool"], ["covered_patio", "Covered patio"], ["open_patio", "Open patio"], ["balcony", "Balcony"], ["shared_pool", "Shared pool"], ["none", "None"]],
 };
 const BAND = { strong: ["Strong", "ok"], good: ["Good", "ok"], maybe: ["Maybe", "warn"], weak: ["Weak", "bad"], "no-fit": ["No fit", "bad"] };
-const state = { profile: null, items: [], comments: [], q: "", budget: false, hideNoFit: false, taken: true, view: "board", lane: "inbox", sub: "new", editing: null, mode: "snapshot", db: null, assets: null, canWrite: true, week: 0, overlay: null, me: null };
+const state = { profile: null, items: [], comments: [], q: "", budget: false, hideNoFit: false, taken: true, view: "board", lane: "inbox", sub: "new", editing: null, mode: "snapshot", db: null, assets: null, canWrite: true, week: 0, overlay: null, me: null, uid: null, members: {}, seenBefore: null, whatsNew: false, names: {}, share: null, user: null };
 const store = {}; // backend adapter: put(item), del(id), comment(c), uncomment(id), photo(id, blob)
 
 function prefs(save) {
@@ -297,7 +312,78 @@ function toast(html, ms = 3500) { const t = $("#toast"); t.innerHTML = html; t.h
 function setStatus(s, err) { const e = $("#status"); e.textContent = s || ""; e.classList.toggle("err", !!err); }
 function stageOf(it) { return SUBS.some(s => s.id === it.stage) ? it.stage : "new"; }
 function people() { const p = P().household?.people || []; return p.length ? p : [{ id: "me", name: "Me" }]; }
-function ratingsOf(it) { const r = it.ratings || {}; const v = people().map(p => Number(r[p.id]) || 0); const got = v.filter(Boolean); return { v, avg: got.length ? got.reduce((a, b) => a + b, 0) / got.length : 0, split: got.length >= 2 && Math.max(...got) - Math.min(...got) >= 2, any: got.length > 0 }; }
+// ---- Sharing: who's looking, who changed what, and what's new since your last visit ----
+function raters() { const r = people().filter(p => p.role !== "helper"); return r.length ? r : people(); }
+function whoName(by) {
+  if (!by) return "Someone"; const p = people().find(x => x.id === by); if (p) return p.name || p.id;
+  if (String(by).startsWith("u:")) { const u = by.slice(2); if (!(u in state.names)) lookupNames([u]); return state.names[u] || "A helper"; }
+  return by === "scout" ? "The scout" : String(by);
+}
+let nameReq = null;
+function lookupNames(ids) { if (!state.user?.profiles || nameReq) return; nameReq = state.user.profiles(ids).then(ps => { for (const id of ids) state.names[id] = ps?.[id]?.name || ""; nameReq = null; render(); }).catch(() => { nameReq = null; }); }
+function ago(t) { const m = (Date.now() - t) / 6e4; return m < 1 ? "just now" : m < 60 ? Math.round(m) + " min ago" : m < 1440 ? Math.round(m / 60) + " h ago" : m < 2880 ? "yesterday" : new Date(t).toLocaleDateString(P().locale || undefined, { day: "numeric", month: "short" }); }
+function describeChange(prev, next) {
+  if (!prev) return "added it";
+  if (prev.status !== next.status) return "moved it to " + ((LANES().find(l => l.id === next.status) || {}).name || next.status);
+  if (prev.stage !== next.stage && next.status === "inbox") return "moved it to " + ((SUBS.find(x => x.id === next.stage) || {}).name || next.stage);
+  if (JSON.stringify(prev.ratings || {}) !== JSON.stringify(next.ratings || {})) return "rated it";
+  if (prev.viewingAt !== next.viewingAt && next.viewingAt) return "booked a viewing";
+  if (prev.photo !== next.photo) return "added a photo";
+  if ((prev.dupOf || "") !== (next.dupOf || "")) return next.dupOf ? "linked it as a duplicate" : "unlinked a duplicate";
+  if (!!prev.taken !== !!next.taken) return next.taken ? "marked it taken" : "marked it available";
+  return "edited the details";
+}
+function freshness(it) { // null, or {kind: "new"|"updated", by, what, at}
+  const since = state.seenBefore; if (!since) return null;
+  if ((it.createdAt || 0) > since && it.addedBy && it.addedBy !== state.me) return { kind: "new", by: it.addedBy, what: "added it", at: it.createdAt };
+  const c = it.lastChange; if (c && c.at > since && c.by && c.by !== state.me) return { kind: "updated", by: c.by, what: c.what, at: c.at };
+  const cm = state.comments.filter(x => x.listingId === it.id && x.at > since && x.by && x.by !== state.me).sort((a, b) => b.at - a.at)[0];
+  if (cm) return { kind: "updated", by: cm.by, what: "commented", at: cm.at };
+  return null;
+}
+const SEEN_LS = () => "hh-seen-" + (P().title || "board");
+async function loadSeen() {
+  try {
+    if (state.mode === "artifact" && state.uid) { const d = await state.db.collection("data/users/" + state.uid).doc("seen").get(); state.seenBefore = d?.exists ? d.data().at || null : null; }
+    else state.seenBefore = Number(localStorage.getItem(SEEN_LS())) || null;
+  } catch (e) { }
+  render();
+  // Count as "seen" only after 8s of the page actually being looked at, so a quick reload or a background tab doesn't clear the news.
+  const openedAt = Date.now(); let shown = 0, since = document.hidden ? null : Date.now(), done = false;
+  const mark = () => { if (done) return; done = true; const at = openedAt; try { if (state.mode === "artifact" && state.uid) state.db.collection("data/users/" + state.uid).doc("seen").set({ at }).catch(() => { }); else localStorage.setItem(SEEN_LS(), String(at)); } catch (e) { } };
+  const tick = () => { if (since != null) { shown += Date.now() - since; since = document.hidden ? null : Date.now(); } if (shown >= 8000) mark(); };
+  const timer = setInterval(() => { tick(); if (done) clearInterval(timer); }, 1000);
+  document.addEventListener("visibilitychange", () => { tick(); if (!document.hidden) since = Date.now(); });
+}
+function renderWho() {
+  const bar = $("#whoBar"), ppl = people(), shared = state.mode === "artifact";
+  if (shared && !state.canWrite) { bar.hidden = false; bar.className = "whobar ro"; bar.innerHTML = `<b>You can look, but not change anything yet.</b><span class="note">Ask whoever set up this board to give you edit access: Share menu at the top of this page → your name → Can edit.</span>`; return; }
+  const known = state.me && (ppl.some(p => p.id === state.me) || String(state.me).startsWith("u:"));
+  if (known || ppl.length < 2 && !shared || !ppl[0]?.name) { bar.hidden = true; return; }
+  bar.hidden = false; bar.className = "whobar";
+  bar.innerHTML = `<b>Who are you?</b>${ppl.map(p => `<button class="chip" type="button" data-iam="${esc(p.id)}">${esc(p.name || p.id)}</button>`).join("")}${shared ? '<button class="chip" type="button" data-iam="helper">Someone helping</button>' : ""}<span class="note">So your stars, comments and changes carry your name, and you see what others changed since you last looked.</span>`;
+}
+async function setMe(pid) {
+  state.me = pid === "helper" ? "u:" + (state.uid || uid()) : pid; prefs(true);
+  if (state.mode === "artifact" && state.uid) { state.members = { ...state.members, [state.uid]: pid }; try { await state.db.doc("meta/members").set(JSON.parse(JSON.stringify(state.members))); } catch (e) { } }
+  render(); toast(`Hi ${esc(whoName(state.me))}. Changes you make now carry your name.`);
+}
+function openShare() {
+  const sh = $("#shareSheet"), shared = state.mode === "artifact";
+  const joined = new Set(Object.values(state.members || {}));
+  const link = state.share?.url || "";
+  sh.innerHTML = shared ? `<h3>One board for everyone</h3>
+    <p class="meta" style="margin:0">Everyone works from this same live board. New listings, moves, stars and comments show up for all of you, so nobody sends links back and forth.</p>
+    <ol><li>Open the <b>Share</b> menu at the top of this page.</li><li>Invite your partner, family or friends by email.</li><li>Set each one to <b>Can edit</b> so they can move cards, rate and comment.</li><li>Send them the link once. It never changes; the scout updates this board in place.</li></ol>
+    ${link ? `<div class="linkbox"><input id="shLink" readonly value="${esc(link)}"><button class="btn sm" id="shCopy" type="button">Copy link</button></div>` : ""}
+    <div><div class="meta" style="margin-bottom:6px">Who's joined</div><div class="who-list">${people().map(p => `<span class="${joined.has(p.id) ? "in" : ""}">${esc(p.name || p.id)}${joined.has(p.id) ? " ✓" : ""}</span>`).join("")}${Object.values(state.members || {}).filter(v => v === "helper").length ? `<span class="in">${Object.values(state.members).filter(v => v === "helper").length} helping ✓</span>` : ""}</div></div>
+    <p class="meta" style="margin:0">Everyone needs to be signed in to Claude. Only people you invite can open it, and they see everything on it, including your budget.</p>`
+    : `<h3>Share this board</h3><p class="meta" style="margin:0">This copy lives on this computer, so other people can't open it or see your changes.</p>
+    <p style="margin:0">For one live board the whole household uses from their own phones, ask Claude: <b>"set up the shared board"</b>. It needs Claude on the web or the desktop app.</p>`;
+  sh.innerHTML += `<div style="display:flex;justify-content:flex-end"><button class="btn primary" id="shDone" type="button">Done</button></div>`;
+  sh.hidden = $("#scrim").hidden = false;
+}
+function ratingsOf(it) { const r = it.ratings || {}; const v = raters().map(p => Number(r[p.id]) || 0); const got = v.filter(Boolean); return { v, avg: got.length ? got.reduce((a, b) => a + b, 0) / got.length : 0, split: got.length >= 2 && Math.max(...got) - Math.min(...got) >= 2, any: got.length > 0 }; }
 function primaries() { return state.items.filter(i => !i.dupOf || !state.items.some(x => x.id === i.dupOf)); }
 function linked(it) { return state.items.filter(x => x.dupOf === it.id); }
 
@@ -305,6 +391,7 @@ function visible() {
   const q = state.q.trim().toLowerCase(), max = P().budget?.max;
   return primaries().filter(it => {
     if (!state.taken && it.taken) return false;
+    if (state.whatsNew && !freshness(it)) return false;
     if (state.budget && max && it.price > max) return false;
     if (state.hideNoFit && scoreOf(it).band === "no-fit") return false;
     if (!q) return true;
@@ -315,7 +402,7 @@ function visible() {
 /* ---------- header ---------- */
 function renderHeader() {
   const p = P(), b = p.budget || {}, m = p.moveIn || {};
-  $("#hTitle").textContent = p.title || "Home Hunt";
+  $("#hTitle").textContent = p.title || "Hermit";
   const bits = [];
   bits.push(`<b>${BUY() ? "Buying" : "Renting"}</b>`);
   if (b.max) bits.push(`${b.ideal ? "ideal <b>" + esc(moneyShort(b.ideal)) + "</b>, " : ""}max <b>${esc(moneyShort(b.max))}</b>${BUY() ? "" : "/mo"}`);
@@ -331,7 +418,8 @@ function renderHeader() {
   const asks = sc.reduce((a, s) => a + s.ask.length, 0);
   const next = active.filter(i => i.viewingAt && parseLocal(i.viewingAt) > new Date()).sort((a, b) => a.viewingAt.localeCompare(b.viewingAt))[0];
   const nView = prim.filter(i => i.status === "viewing" && !i.taken).length;
-  $("#stats").innerHTML = `<span><strong class="num">${active.length}</strong> active</span><span><strong class="num">${strong}</strong> good or strong</span><span><strong class="num">${nView}</strong> viewing${nView === 1 ? "" : "s"}</span><span><strong class="num">${asks}</strong> questions for agents</span>${next ? `<span>Next viewing <strong>${esc(fmtView(next.viewingAt))}</strong></span>` : ""}${lastRunChip()}`;
+  const nNew = primaries().filter(i => freshness(i)).length;
+  $("#stats").innerHTML = (nNew || state.whatsNew ? `<button class="chip news" id="fNew" type="button" aria-pressed="${state.whatsNew}">${state.whatsNew ? "Showing what's new · show all" : `${nNew} new or changed since you last looked`}</button>` : "") + `<span><strong class="num">${active.length}</strong> active</span><span><strong class="num">${strong}</strong> good or strong</span><span><strong class="num">${nView}</strong> viewing${nView === 1 ? "" : "s"}</span><span><strong class="num">${asks}</strong> questions for agents</span>${next ? `<span>Next viewing <strong>${esc(fmtView(next.viewingAt))}</strong></span>` : ""}${lastRunChip()}`;
   $("#areaList").innerHTML = (p.areas || []).map(a => `<option value="${esc(a.name)}">`).join("");
   $("#fBudget").setAttribute("aria-pressed", state.budget); $("#fFit").setAttribute("aria-pressed", state.hideNoFit); $("#fTaken").setAttribute("aria-pressed", state.taken);
   $("#exportBtn").hidden = state.mode !== "snapshot";
@@ -349,9 +437,10 @@ function cardHTML(it, compact) {
     if (r.ask.length) tags.push(`<span class="tag warn">${r.ask.length} to confirm</span>`);
   }
   if (n) tags.push(`<span class="tag">${n + 1} listings</span>`);
+  const fr = freshness(it); if (fr) tags.unshift(`<span class="tag new">${fr.kind === "new" ? "New" : "Updated"}</span>`);
   if ((it.priceHistory || []).length) { const h = it.priceHistory.at(-1); tags.push(`<span class="tag ${h.to < h.from ? "ok" : "warn"}">${h.to < h.from ? "↓" : "↑"} ${esc(moneyShort(Math.abs(h.to - h.from)))}</span>`); }
-  const rate = R.any ? `<span class="rate${R.split ? " split" : ""}" title="${esc(people().map((p, i) => `${p.name || "?"}: ${R.v[i] ? R.v[i] + " stars" : "not rated"}`).join(", "))}${R.split ? " (you disagree)" : ""}">${people().map((p, i) => compact ? `${esc((p.name || "?")[0])}<b>${R.v[i] || "–"}</b>` : `${esc(String(p.name || "?").slice(0, 8))} <b>${R.v[i] || "–"}★</b>`).join(" · ")}</span>` : "";
-  return `<button class="card${compact ? " compact" : ""}${it.taken ? " taken" : ""}" draggable="${state.canWrite}" data-id="${esc(it.id)}" type="button">
+  const rate = R.any ? `<span class="rate${R.split ? " split" : ""}" title="${esc(raters().map((p, i) => `${p.name || "?"}: ${R.v[i] ? R.v[i] + " stars" : "not rated"}`).join(", "))}${R.split ? " (you disagree)" : ""}">${raters().map((p, i) => compact ? `${esc((p.name || "?")[0])}<b>${R.v[i] || "–"}</b>` : `${esc(String(p.name || "?").slice(0, 8))} <b>${R.v[i] || "–"}★</b>`).join(" · ")}</span>` : "";
+  return `<button class="card${compact ? " compact" : ""}${it.taken ? " taken" : ""}${fr ? " fresh" : ""}" draggable="${state.canWrite}" data-id="${esc(it.id)}" type="button">
     <div class="thumb">${it.photo ? `<img src="${esc(it.photo)}" alt="" loading="lazy">` : `<span class="ph">${esc(it.area || "No photo")}</span>`}
       <span class="score ${bc}" title="Fit ${r.score}/100, ${bl}; ${Math.round(r.confidence * 100)}% of facts known"><b>${r.score}</b>${compact ? "" : esc(bl)}</span>${rate}
       ${it.taken ? '<span class="badge taken">Taken</span>' : it.verify?.state === "unverified" ? '<span class="badge unv">Unverified</span>' : ""}</div>
@@ -360,6 +449,7 @@ function cardHTML(it, compact) {
       <span class="spec">${esc(specOf(it))}</span>
       ${compact ? "" : `<div class="tags">${tags.join("")}</div>`}
       ${it.viewingAt && !compact ? `<span class="viewing">${new Date(it.viewingAt) < new Date() ? "Viewed" : "Viewing"} ${esc(fmtView(it.viewingAt))}</span>` : ""}
+      ${fr ? (compact ? `<span class="change" title="${esc(whoName(fr.by) + " " + fr.what + " · " + ago(fr.at))}"><b class="tag new">${fr.kind === "new" ? "New" : "Updated"}</b> ${esc(whoName(fr.by))}</span>` : `<span class="change">${esc(whoName(fr.by))} ${esc(fr.what)} · ${esc(ago(fr.at))}</span>`) : ""}
       ${!compact && (it.agent?.name || cc) ? `<div class="foot"><span>${esc(it.agent?.name || "")}${it.agent?.agency ? " · " + esc(it.agent.agency) : ""}</span><span>${cc ? cc + " 💬" : ""}</span></div>` : ""}
     </div></button>`;
 }
@@ -477,7 +567,7 @@ function renderDrawer() {
   </div>
   ${feats.length ? `<div class="grid2">${feats.map(k => `<label class="f">${esc(S.FEATURE_LABELS[k] || k)}<select data-feat="${esc(k)}"><option value="">Not stated</option><option value="true"${f.features?.[k] === true ? " selected" : ""}>Yes</option><option value="false"${f.features?.[k] === false ? " selected" : ""}>No</option></select></label>`).join("")}</div>` : ""}</div>
   ${it._new ? "" : `<div class="box"><h4><span>Your ratings</span><span class="meta">${R.any ? "★" + R.avg.toFixed(1) : "after the viewing"}</span></h4>
-    ${people().map((pp, i) => `<div class="raterow"><span class="who">${esc(pp.name || "Person " + (i + 1))}</span><span class="stars" data-rater="${esc(pp.id)}">${[1, 2, 3, 4, 5].map(n => `<button type="button" data-star="${n}" class="${R.v[i] >= n ? "on" : ""}" aria-label="${n} stars"${state.canWrite ? "" : " disabled"}>★</button>`).join("")}</span></div>`).join("")}
+    ${raters().map((pp, i) => `<div class="raterow"><span class="who">${esc(pp.name || "Person " + (i + 1))}</span><span class="stars" data-rater="${esc(pp.id)}">${[1, 2, 3, 4, 5].map(n => `<button type="button" data-star="${n}" class="${R.v[i] >= n ? "on" : ""}" aria-label="${n} stars"${state.canWrite ? "" : " disabled"}>★</button>`).join("")}</span></div>`).join("")}
     ${R.split ? `<div class="meta" style="color:var(--warn);font-weight:600">You disagree on this one: talk it through.</div>` : ""}<div class="meta">Separate from the fit score. Tap the same star to clear.</div></div>`}
   ${it._new ? "" : `<div class="box"><h4><span>Same property</span></h4>
     ${linked(it).map(x => `<div class="duprow"><span>${x.url ? `<a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.source || x.id)}</a>` : esc(x.id)} · ${esc(moneyShort(x.price))}${x.agent?.name ? " · " + esc(x.agent.name) : ""}</span>${state.canWrite ? `<button class="btn sm" type="button" data-unlink="${esc(x.id)}">Unlink</button>` : ""}</div>`).join("")}
@@ -486,8 +576,9 @@ function renderDrawer() {
   <label class="check"><input id="fTakenBox" type="checkbox"${it.taken ? " checked" : ""}> Taken / no longer available</label>
   <label class="f">Notes<textarea id="fNotes" placeholder="What did the agent say?">${esc(it.notes)}</textarea></label>
   ${it._new ? "" : `<section class="box"><h4><span>Thoughts and impressions</span></h4>
-    ${state.canWrite ? `<label class="f">Who's writing<select id="cWho">${people().map(pp => `<option value="${esc(pp.id)}"${pp.id === state.me ? " selected" : ""}>${esc(pp.name || pp.id)}</option>`).join("")}</select></label><textarea id="cText" style="min-height:90px;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:10px" placeholder="Light, noise, neighbours, gut feel. Dictation works here."></textarea><div><button class="btn sm primary" id="cAdd" type="button">Add comment</button></div>` : ""}
-    ${cmts.map(c => `<div class="cmt"><div class="cmt-h"><span><b>${esc((people().find(pp => pp.id === c.by) || {}).name || c.by || "Someone")}</b> · ${esc(new Date(c.at).toLocaleString(P().locale || undefined, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }))}</span>${state.canWrite ? `<button class="cmt-del" data-uncomment="${esc(c.id)}" type="button">Delete</button>` : ""}</div><p>${esc(c.text)}</p></div>`).join("")}</section>`}
+    ${state.canWrite ? `<label class="f">Who's writing<select id="cWho">${people().map(pp => `<option value="${esc(pp.id)}"${pp.id === state.me ? " selected" : ""}>${esc(pp.name || pp.id)}</option>`).join("")}${String(state.me).startsWith("u:") ? `<option value="${esc(state.me)}" selected>${esc(whoName(state.me))}</option>` : ""}</select></label><textarea id="cText" style="min-height:90px;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:10px" placeholder="Light, noise, neighbours, gut feel. Dictation works here."></textarea><div><button class="btn sm primary" id="cAdd" type="button">Add comment</button></div>` : ""}
+    ${cmts.map(c => `<div class="cmt"><div class="cmt-h"><span><b>${esc(whoName(c.by))}</b> · ${esc(new Date(c.at).toLocaleString(P().locale || undefined, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }))}</span>${state.canWrite ? `<button class="cmt-del" data-uncomment="${esc(c.id)}" type="button">Delete</button>` : ""}</div><p>${esc(c.text)}</p></div>`).join("")}</section>`}
+  ${(it.log || []).length ? `<div class="box"><h4><span>Activity</span></h4>${it.log.slice(-8).reverse().map(l => `<div class="meta">${esc(whoName(l.by))} ${esc(l.what)} · ${esc(ago(l.at))}</div>`).join("")}</div>` : ""}
   <div class="meta">${it.verify?.state ? `Verified ${esc(it.verify.state)}${it.verify.at ? " on " + esc(String(it.verify.at).slice(0, 10)) : ""} · ` : ""}${it.createdAt ? "Added " + new Date(it.createdAt).toLocaleDateString() : ""}${(it.priceHistory || []).length ? " · Price changes: " + it.priceHistory.map(h => `${esc(h.at)} ${esc(moneyShort(h.from))}→${esc(moneyShort(h.to))}`).join(", ") : ""}</div>`;
 }
 function readDrawer() {
@@ -510,6 +601,9 @@ document.addEventListener("input", e => { if (state.editing && e.target.closest(
 
 async function save(it) {
   const clean = JSON.parse(JSON.stringify(it)); delete clean._new; clean.updatedAt = Date.now();
+  const prev = state.items.find(x => x.id === clean.id), what = describeChange(prev, clean);
+  if (!prev) { clean.createdAt ||= Date.now(); if (state.me) clean.addedBy = state.me; }
+  clean.lastChange = { by: state.me || null, at: Date.now(), what }; clean.log = [...(prev?.log || []), clean.lastChange].slice(-20);
   const i = state.items.findIndex(x => x.id === clean.id); if (i < 0) state.items.push(clean); else state.items[i] = clean;
   render();
   try { setStatus("Saving…"); await store.put(clean); setStatus("Saved"); setTimeout(() => setStatus(""), 1500); } catch (e) { setStatus("Couldn't save: " + (e.message || e.code || e), true); }
@@ -595,11 +689,15 @@ function quickBook(day, hour, x, y) {
 function render() {
   document.body.className = "v-" + state.view;
   $$(".viewtog button").forEach(b => b.setAttribute("aria-pressed", b.dataset.view === state.view));
-  renderHeader();
+  renderHeader(); renderWho();
   if (state.view === "board") renderBoard(); else if (state.view === "map") renderMap(); else renderCal();
 }
 document.addEventListener("click", e => {
   const t = e.target;
+  const iam = t.closest("[data-iam]"); if (iam) { setMe(iam.dataset.iam); return; }
+  if (t.closest("#fNew")) { state.whatsNew = !state.whatsNew; render(); return; }
+  if (t.id === "shDone") { $("#shareSheet").hidden = $("#scrim").hidden = true; return; }
+  if (t.id === "shCopy") { const v = $("#shLink").value; navigator.clipboard?.writeText(v).then(() => toast("Link copied"), () => { $("#shLink").select(); toast("Select the link and copy it"); }); return; }
   const v = t.closest(".viewtog button"); if (v) { state.view = v.dataset.view; prefs(true); render(); return; }
   const seg = t.closest("[data-seg]"); if (seg) { state.sub = seg.dataset.seg; prefs(true); renderBoard(); return; }
   const tab = t.closest("[data-tab]"); if (tab) { state.lane = tab.dataset.tab; document.querySelector(`[data-lane-id="${tab.dataset.tab}"]`)?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" }); $$("#laneTabs button").forEach(b => b.setAttribute("aria-current", b === tab)); return; }
@@ -612,8 +710,9 @@ document.addEventListener("click", e => {
   if (t.id === "cAdd") { const text = $("#cText").value.trim(); if (!text) return; state.me = $("#cWho").value; prefs(true); const c = { id: uid(), listingId: state.editing.id, text, by: state.me, at: Date.now() }; state.comments.push(c); store.comment(c).catch(er => setStatus("Couldn't save comment: " + er.message, true)); renderDrawer(); render(); return; }
   if (!t.closest("#pop") && !$("#pop").hidden && !day) $("#pop").hidden = true;
 });
-$("#dClose").onclick = closeDrawer; $("#scrim").onclick = closeDrawer;
-document.addEventListener("keydown", e => { if (e.key === "Escape") { if (!$("#pop").hidden) $("#pop").hidden = true; else if (!$("#drawer").hidden) closeDrawer(); } if ((e.key === "Enter" || e.key === " ") && e.target.classList?.contains("pin")) openDrawer(e.target.dataset.id); });
+$("#dClose").onclick = closeDrawer; $("#scrim").onclick = () => { if (!$("#shareSheet").hidden) { $("#shareSheet").hidden = $("#scrim").hidden = true; return; } closeDrawer(); };
+$("#shareBtn").onclick = openShare;
+document.addEventListener("keydown", e => { if (e.key === "Escape") { if (!$("#shareSheet").hidden) { $("#shareSheet").hidden = $("#scrim").hidden = true; return; } if (!$("#pop").hidden) $("#pop").hidden = true; else if (!$("#drawer").hidden) closeDrawer(); } if ((e.key === "Enter" || e.key === " ") && e.target.classList?.contains("pin")) openDrawer(e.target.dataset.id); });
 $("#dSave").onclick = () => { const it = readDrawer(); if (!it.url && !it.area && !it.price) { setStatus("Add at least a link, area or price", true); return; } if (it._new && it.url) { try { const u = new URL(it.url); const m = /(\d{4,})(?!.*\d{4,})/.exec(u.pathname + u.search); const host = u.hostname.replace(/^www\./, "").split(".")[0]; if (m) it.id = host + "-" + m[1]; it.source ||= host; } catch (e) { } }
   if (it._new && state.items.some(x => x.id === it.id)) { setStatus("That listing is already on the board", true); openDrawer(it.id); return; } save(it); closeDrawer(); };
 $("#dDelete").onclick = () => { const it = state.editing; toast(`Delete this listing for everyone? <button class="btn sm" id="tDel">Delete</button><button class="btn sm ghost" id="tNo2">Keep</button>`, 0); $("#tDel").onclick = async () => { $("#toast").hidden = true; state.items = state.items.filter(i => i.id !== it.id); closeDrawer(); render(); try { await store.del(it.id); } catch (er) { setStatus("Couldn't delete: " + er.message, true); } }; $("#tNo2").onclick = () => $("#toast").hidden = true; };
@@ -625,7 +724,7 @@ $("#fTaken").onclick = () => { state.taken = !state.taken; prefs(true); render()
 $("#wPrev").onclick = () => { state.week--; renderCal(); }; $("#wNext").onclick = () => { state.week++; renderCal(); }; $("#wToday").onclick = () => { state.week = 0; renderCal(); };
 document.addEventListener("change", e => { if (e.target.id === "fPhoto" && e.target.files[0]) setPhoto(e.target.files[0]); });
 document.addEventListener("paste", e => { if (!state.editing) return; const f = [...(e.clipboardData?.items || [])].find(i => i.type.startsWith("image/")); if (f) { e.preventDefault(); setPhoto(f.getAsFile()); } });
-$("#exportBtn").onclick = () => { const blob = new Blob([JSON.stringify({ listings: state.items, comments: state.comments, deleted: state.overlay?.deleted || [] }, null, 2)], { type: "application/json" }); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "home-hunt-changes.json"; a.click(); toast("Saved. Ask Claude to import home-hunt-changes.json (it runs <code>hh.js import</code>)."); };
+$("#exportBtn").onclick = () => { const blob = new Blob([JSON.stringify({ listings: state.items, comments: state.comments, deleted: state.overlay?.deleted || [] }, null, 2)], { type: "application/json" }); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "hermit-changes.json"; a.click(); toast("Saved. Ask Claude to import hermit-changes.json (it runs <code>hermit.js import</code>)."); };
 
 /* ---------- backends ---------- */
 function blobToDataURL(b) { return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(b); }); }
@@ -648,7 +747,10 @@ function useServer() {
 async function useArtifact(claude) { // claude.ai artifact: shared live state in the artifact db
   const db = await claude.use("db"); if (!db) return false;
   state.mode = "artifact"; state.db = db; state.assets = await claude.use("assets");
-  const user = await claude.use("user"); try { const can = await user?.can?.("data.write"); state.canWrite = can !== false; } catch (e) { }
+  const user = await claude.use("user"); state.user = user; try { const can = await user?.can?.("data.write"); state.canWrite = can !== false; } catch (e) { }
+  try { state.uid = await user?.id?.() || null; } catch (e) { }
+  db.doc("meta/members").onSnapshot(s => { state.members = s.exists ? s.data() : {}; const pid = state.uid && state.members[state.uid]; if (pid) state.me = pid === "helper" ? "u:" + state.uid : pid; else if (state.me && !String(state.me).startsWith("u:") && state.uid) state.me = null; render(); }, () => { });
+  db.doc("meta/share").onSnapshot(s => { state.share = s.exists ? s.data() : null; }, () => { });
   const strip = o => JSON.parse(JSON.stringify(o));
   Object.assign(store, {
     put: l => db.collection("listings").doc(l.id).set(strip(l)),
@@ -663,6 +765,7 @@ async function useArtifact(claude) { // claude.ai artifact: shared live state in
   db.collection("listings").onSnapshot(s => { got = true; clearTimeout(timer); setStatus(""); state.items = s.docs.map(d => ({ ...d.data(), id: d.id })); if (!state.editing) render(); }, e => setStatus("Shared data error: " + (e.code || e.message), true));
   db.collection("comments").onSnapshot(s => { state.comments = s.docs.map(d => ({ ...d.data(), id: d.id })); if (!state.editing) render(); else renderDrawer(); }, () => { });
   if (!state.canWrite) $("#addBtn").hidden = true;
+  loadSeen();
   return true;
 }
 
@@ -673,6 +776,7 @@ async function useArtifact(claude) { // claude.ai artifact: shared live state in
   if (boot.mode === "server") useServer();
   else if (boot.mode === "artifact" && window.claude?.use) { render(); if (!(await useArtifact(window.claude))) { state.canWrite = false; setStatus("Sign in to see the shared board", true); } }
   else useSnapshot();
+  if (state.mode !== "artifact") loadSeen();
   if (window.matchMedia("(max-width:640px)").matches && state.view === "board") { const first = LANES().find(l => visible().some(i => (i.status || "inbox") === l.id)); if (first) state.lane = first.id; }
   render();
   if (state.lane !== "inbox") document.querySelector(`[data-lane-id="${state.lane}"]`)?.scrollIntoView({ inline: "center" });

@@ -7,7 +7,7 @@
   "locale": "en-US",
   "units": "imperial",
   "household": {
-    "people": [{ "id": "a", "name": "Alex" }, { "id": "b", "name": "Sam" }],
+    "people": [{ "id": "a", "name": "Alex" }, { "id": "b", "name": "Sam" }, { "id": "jo", "name": "Jo", "role": "helper" }],
     "pets": [{ "kind": "dog", "size": "medium", "count": 2 }]
   },
   "budget": { "ideal": 2300, "max": 2600 },

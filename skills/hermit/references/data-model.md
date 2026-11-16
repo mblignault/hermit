@@ -35,10 +35,15 @@
   "notes": "",
   "photo": "/photos/ep-123456.jpg",   // or "/_blob/<assetId>" on the artifact board
   "photoSrc": "https://…",               // remote image to backfill later
-  "createdAt": 0, "updatedAt": 0
+  "createdAt": 0, "updatedAt": 0,
+  "addedBy": "scout",                    // person id, "u:<account>" for a helper, or "scout"
+  "lastChange": { "by": "b", "at": 0, "what": "moved it to Shortlist" },  // drives "New / Updated since you last looked"
+  "log": [{ "by": "b", "at": 0, "what": "moved it to Shortlist" }]          // last 20 changes; the board keeps it
 }
 ```
 
-Comment: `{ "id", "listingId", "by": "<person id>", "text", "at": <ms> }`
+Comment: `{ "id", "listingId", "by": "<person id or u:<account>>", "text", "at": <ms> }`
+
+When the scout adds or changes a listing, set `addedBy: "scout"` or `lastChange: {by: "scout", at, what}` (for example "marked it taken", "dropped the price"), and append the same to `log`. The board does this itself for people's edits.
 
 Never add `score` or `band` fields: they'd go stale.

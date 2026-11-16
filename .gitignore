@@ -1,5 +1,5 @@
 node_modules/
 .privacy-denylist
-/home-hunt/
+/hermit/
 *.tmp
 .DS_Store

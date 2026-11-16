@@ -6,7 +6,7 @@ Post a short progress checklist if the host shows one: load, inputs, sweep, veri
 
 ## 1. Load
 
-`hh.js status` and `hh.js list --active`. Note the current board ids, every `url` and `links[].url`, and the cross-post fingerprints (complex, address, price, beds) so you can recognise listings you've already seen.
+`hermit.js status` and `hermit.js list --active`. Note the current board ids, every `url` and `links[].url`, and the cross-post fingerprints (complex, address, price, beds) so you can recognise listings you've already seen.
 
 ## 2. Extra inputs (if connected)
 
@@ -43,18 +43,18 @@ Now verify it's live (`sources.md` §4). A **new** candidate that isn't confirme
 
 ## 5. Check, then add
 
-Write the candidate to a temp file and run `hh.js check <file>`. It returns the score, deal-breakers and `possibleDuplicates` **without writing anything**.
+Write the candidate to a temp file and run `hermit.js check <file>`. It returns the score, deal-breakers and `possibleDuplicates` **without writing anything**.
 - **Deal-breaker (band `no-fit`):** don't add it. Mention it in the report only if the deal-breaker is the user's call to make (an otherwise perfect place that says "small pets only").
 - **Possible duplicate ≥ 0.7** against a board card: compare the photos, complex, street, size and agent (below).
-- Otherwise `hh.js add <file>`.
+- Otherwise `hermit.js add <file>`.
 
 For a likely duplicate:
-- **Same property:** keep the better listing as the primary. Prefer the one already being discussed, otherwise the cheaper or the one with more detail. Set `dupOf` on the new one before `add` (or `hh.js set <id> dupOf=<primary>` if it's the existing card that should step back). If the cross-post is cheaper, note it on the primary.
+- **Same property:** keep the better listing as the primary. Prefer the one already being discussed, otherwise the cheaper or the one with more detail. Set `dupOf` on the new one before `add` (or `hermit.js set <id> dupOf=<primary>` if it's the existing card that should step back). If the cross-post is cheaper, note it on the primary.
 - **Different unit in the same complex:** leave both, and say so in the notes.
 
 ## 6. Score
 
-`hh.js score <id> --explain` for each new card, for the report. The board computes the same scores live, so never write the score into the listing. New cards land in `status: inbox, stage: new`.
+`hermit.js score <id> --explain` for each new card, for the report. The board computes the same scores live, so never write the score into the listing. New cards land in `status: inbox, stage: new`.
 
 ## 7. Photos
 
@@ -66,12 +66,14 @@ With the budget that's left, re-open the detail pages of active cards, oldest `v
 - **Delisted** (positive evidence: 404/410, "no longer available", archive redirect): set `taken: true` and `verify.state: delisted`. Move it to `no` only if it's still in the Inbox; anywhere further along, leave it where it is and flag it in the report.
 - **Errored or timed out:** `verify.state: unverified`. It stays where it is. Retry next run, and don't call it taken.
 - **Live:** `verify.state: live` and update `verify.at`.
-- Price changed: `hh.js set <id> price=<new>` records `priceHistory`. Report drops especially.
+- Price changed: `hermit.js set <id> price=<new>` records `priceHistory`. Report drops especially.
 - A listing marked taken that's still live: tell them. It may be worth a nudge to the agent.
 
 ## 9. Refresh the board
 
-Local: `hh.js board`, or nothing if `serve` is running, since it reads live. Artifact: the rows are already written; republish only if the page template changed.
+Local: `hermit.js board`, or nothing if `serve` is running, since it reads live. Artifact: the rows are already written; republish only if the page template changed, and always to the same URL. Never create a second board.
+
+`hermit.js add` and `hermit.js set` mark new cards `addedBy: "scout"` and record price changes and taken/available as `lastChange` by the scout, so the household sees "The scout dropped the price · 2 h ago". On the artifact board, write the listing row as `hermit.js` left it (the `docs` output), so those fields go along.
 
 ## 10. Log and report
 
@@ -79,12 +81,12 @@ Report to wherever `sources.json.schedule.reportTo` says (the chat, a project, o
 
 Artifact board: also write the same record to `meta/lastRun` with the data tool, so the board shows it.
 
-`hh.js runlog '{"added":N,"updated":N,"checked":N,"delisted":N,"unverified":N,"sources":[...],"budgetUsed":N}'`
+`hermit.js runlog '{"added":N,"updated":N,"checked":N,"delisted":N,"unverified":N,"sources":[...],"budgetUsed":N}'`
 
 Then post the report. On a **quiet day**, one line: "Scout ran, nothing new: 3 sites, 7 areas, 42 listings checked, nothing delisted. [Board]".
 
 Otherwise:
-- "N new on the board" + link
+- "N new on the board" + the board link (always the same link, so the household can keep one bookmark)
 - One line per new card, best first: **price · area · score (band):** the 2–3 facts that matter, plus the top open question
 - Price drops, delistings that affect cards in progress, and live listings marked taken
 - Skipped near-misses worth a look, each with the one reason ("perfect but only small pets")

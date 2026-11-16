@@ -1,12 +1,28 @@
-# Home Hunt
+# Hermit
 
-**A Claude skill that runs your home search for you, renting or buying, in any country.**
+**Scouts every shell before you move in.**
 
-Tell it once what you're looking for. It checks the listing sites on a schedule, keeps only listings that are real and still available, scores each one against *your* priorities, tells you what to ask the agent, and keeps everything on a board you and your household share.
+A Claude skill that runs your home search, renting or buying, in any country. Tell it once what you're looking for. It checks the listing sites on a schedule, keeps only listings that are real and still available, scores each one against *your* priorities, tells you what to ask the agent, and puts it all on **one board your whole household shares**.
 
-![How it works: say what you want, it picks the sites, it scouts on a schedule, you decide on the board](docs/how-it-works.svg)
+(Hermit crabs inspect every shell before they move in. So does this.)
+
+![How it works: say what you want, it picks the sites, it scouts on a schedule, you decide together on one shared board](docs/how-it-works.svg)
 
 ![The board: listings in columns from Inbox to Apply, each with a fit score](docs/board.png)
+
+## One link for the whole household
+
+Finding a home is a group decision, and the usual way of making it is a chat full of forwarded links. Hermit replaces that with one board everyone works from.
+
+- **Bookmark it once.** Every scout adds to the same board, and the link never changes. Nobody forwards a listing again.
+- **Everyone is themselves.** Each person picks their name once, so stars, comments and moves carry it: "Alex 4★ · Sam 2★".
+- **See what changed since you last looked.** Cards someone else (or the scout) added, moved, rated or commented on get a tag and a line like "Sam moved it to Shortlist · 2 h ago". One tap shows only those.
+- **Helpers welcome.** A parent or a friend who knows the area can comment and move cards without their stars counting.
+- **Inviting takes a minute.** Share → add their email → Can edit. The board's **Share** button walks them through it and shows who has joined.
+
+![What's new since you last looked: cards tagged Updated, with who changed what](docs/together.png)
+
+The shared board is a private Claude artifact, so it needs claude.ai or Claude Desktop. In Claude Code alone, the board runs on your computer and others get a read-only copy.
 
 ## Get started
 
@@ -14,9 +30,9 @@ Tell it once what you're looking for. It checks the listing sites on a schedule,
 
 | Where | How |
 |---|---|
-| Claude Code (plugin) | `/plugin marketplace add mblignault/home-hunt` then `/plugin install home-hunt@home-hunt` |
-| Claude Code or Desktop (plain skill) | Copy `skills/home-hunt` into `~/.claude/skills/` |
-| claude.ai | Zip the `skills/home-hunt` folder (the zip should contain `home-hunt/SKILL.md`) and upload it under Customize → Skills. Turn on code execution. |
+| Claude Code (plugin) | `/plugin marketplace add mblignault/hermit` then `/plugin install hermit@hermit` |
+| Claude Code or Desktop (plain skill) | Copy `skills/hermit` into `~/.claude/skills/` |
+| claude.ai | Zip the `skills/hermit` folder (the zip should contain `hermit/SKILL.md`) and upload it under Customize → Skills. Turn on code execution. |
 
 **2. Say** "help me find a place to live". That's it. Setup takes about 5 minutes:
 
@@ -41,7 +57,7 @@ Quiet days get one line ("Scout ran, nothing new: 3 sites, 7 areas, 42 checked")
 
 | | Scouting | Schedule | Board |
 |---|---|---|---|
-| **Claude Code** on your computer | ✓ | Routines, or a cron line it writes for you | Live board on your computer (`hh.js serve`) |
+| **Claude Code** on your computer | ✓ | Routines, or a cron line it writes for you | Live board on your computer (`hermit.js serve`) |
 | **claude.ai** with code execution | ✓ | Scheduled tasks, where available | **Shared** board your household can edit, as a private Claude artifact |
 | **Claude Desktop / Cowork** | ✓ | Scheduled tasks, where available | Shared artifact board or local board |
 | Chat with no tools | ✗ | | |
@@ -50,7 +66,7 @@ It needs Node 18+ for its helper script (no dependencies), and web access to rea
 
 ## What you can say
 
-You can type these after the skill's command (`/home-hunt scout` as a plain skill, `/home-hunt:home-hunt scout` as a plugin) or just ask in plain words.
+You can type these after the skill's command (`/hermit scout` as a plain skill, `/hermit:hermit scout` as a plugin) or just ask in plain words.
 
 | Everyday | |
 |---|---|
@@ -75,10 +91,10 @@ You can type these after the skill's command (`/home-hunt scout` as a plain skil
 | <img src="docs/drawer.png" alt="A card's detail: score breakdown, questions for the agent, editable facts" width="360"> | <img src="docs/phone.png" alt="The board on a phone, in dark mode" width="300"> |
 
 - **Columns:** Inbox (New, Deciding, To contact), Contacted, Viewing booked, Shortlist, Apply (Offer when buying) and No. Drag cards between them.
-- **Cards:** the fit score, deal-breakers in red, how many facts are still to confirm, price drops, and each person's own star rating after a viewing ("Alex 4★ · Sam 2★", amber when you disagree).
+- **Cards:** the fit score, deal-breakers in red, how many facts are still to confirm, price drops, each person's own star rating after a viewing (amber when you disagree), and who changed it last.
 - **Card detail:** why it scored what it did, with unknowns striped; what to ask the agent; and every fact, editable. Fix a fact and the score updates on the spot.
 - **One card per home:** the same place cross-posted by several agencies is linked, not repeated.
-- **Last scout** in the header shows the scout is alive.
+- **Last scout** in the header shows the scout is alive. Each card's detail keeps its recent activity.
 - **Phone:** one column per swipe, light and dark themes.
 
 **Map:** your listings, the places you travel to, and the part of an area you like (dashed). No map service needed.
@@ -89,7 +105,7 @@ You can type these after the skill's command (`/home-hunt scout` as a plain skil
 
 ![Calendar: the week's viewings, with back-to-back ones side by side and flagged](docs/calendar.png)
 
-Try it with fictional data: `node skills/home-hunt/scripts/hh.js demo` (it serves a temporary copy, so nothing in the repo changes). The demo pictures are illustrations; real hunts show each listing's own photo.
+Try it with fictional data: `node skills/hermit/scripts/hermit.js demo` (it serves a temporary copy, so nothing in the repo changes). The demo pictures are illustrations; real hunts show each listing's own photo.
 
 ## How scoring works
 
@@ -120,7 +136,7 @@ Only South Africa has been used on a real hunt so far. For the others, setup tes
 
 - **Local board:** your hunt stays in a folder on your computer that tells git to ignore it.
 - **Shared board:** your data lives in a private Claude artifact. Only people you share it with can see it, and they see all of it, including your budget (and, when buying, your income).
-- This repo contains only fictional examples. `tools/privacy-scan.js` blocks commits containing emails, phone numbers, ID numbers, real listing links, or any term from your personal word list (kept outside the repo, in `~/.config/home-hunt/privacy-denylist`). CI runs it on every push.
+- This repo contains only fictional examples. `tools/privacy-scan.js` blocks commits containing emails, phone numbers, ID numbers, real listing links, or any term from your personal word list (kept outside the repo, in `~/.config/hermit/privacy-denylist`). CI runs it on every push.
 
 ## Respecting sites
 

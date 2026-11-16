@@ -2,7 +2,7 @@
 
 For `help`, show this, shortened to what's useful. For `help <command>`, show only that line and a one-line example. People can also just ask in plain words.
 
-**Home Hunt: what you can say**
+**Hermit: what you can say**
 
 Everyday
 - `scout`: check the sites now for new listings.

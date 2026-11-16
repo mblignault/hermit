@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// home-hunt CLI. Node 18+, no dependencies. Run `node hh.js help` for commands.
+// hermit CLI. Node 18+, no dependencies. Run `node hermit.js help` for commands.
 "use strict";
 const fs = require("fs");
 const path = require("path");
@@ -8,9 +8,9 @@ const { scoreListing, haversineKm, dupLikelihood: dupScore } = require("./score.
 
 const os = require("os");
 const SKILL = path.resolve(__dirname, "..");
-const USAGE = `home-hunt helper. Node 18+, no dependencies.
+const USAGE = `hermit helper. Node 18+, no dependencies.
 
-Workspace: --dir <path>, else $HOME_HUNT_DIR, else ./home-hunt if it exists, else ~/home-hunt
+Workspace: --dir <path>, else $HERMIT_DIR, else ./hermit if it exists, else ~/hermit
 
   init                          create a workspace from templates (never overwrites)
   status                        one-screen summary: profile, sites, board counts, last scout
@@ -29,26 +29,26 @@ Workspace: --dir <path>, else $HOME_HUNT_DIR, else ./home-hunt if it exists, els
   geo <lat,lng> <lat,lng>       straight-line and estimated road distance
   import <changes.json>         merge edits exported from a snapshot board
   export [--csv]                print listings as JSON or CSV
-  docs [outdir]                 one file per shared-board document + writes.json, to seed an artifact board
+  docs [outdir] [--url <board>] one file per shared-board document + writes.json, to seed an artifact board
   runlog '<json>'               append a scout run record
   reset --yes [--keep-profile]  back up, then clear the workspace
   help                          this text`;
 const argv = process.argv.slice(2);
 const opt = (name, def) => { const i = argv.indexOf("--" + name); if (i < 0) return def; const v = argv[i + 1]; argv.splice(i, v && !v.startsWith("--") ? 2 : 1); return v && !v.startsWith("--") ? v : true; };
-const DIR = path.resolve(opt("dir") || process.env.HOME_HUNT_DIR || (fs.existsSync("home-hunt/profile.json") ? "home-hunt" : path.join(os.homedir(), "home-hunt")));
+const DIR = path.resolve(opt("dir") || process.env.HERMIT_DIR || (fs.existsSync("hermit/profile.json") ? "hermit" : path.join(os.homedir(), "hermit")));
 const F = {
   profile: path.join(DIR, "profile.json"), sources: path.join(DIR, "sources.json"),
   listings: path.join(DIR, "listings.json"), runs: path.join(DIR, "runs.jsonl"),
   board: path.join(DIR, "board.html"), photos: path.join(DIR, "photos"), backups: path.join(DIR, "backups"),
 };
-const die = m => { console.error("home-hunt: " + m); process.exit(1); };
+const die = m => { console.error("hermit: " + m); process.exit(1); };
 const readJSON = (f, def) => { try { return JSON.parse(fs.readFileSync(f, "utf8")); } catch (e) { if (def !== undefined && e.code === "ENOENT") return def; die(`can't read ${f}: ${e.message}`); } };
 const writeJSON = (f, v) => { fs.mkdirSync(path.dirname(f), { recursive: true }); const tmp = f + ".tmp"; fs.writeFileSync(tmp, JSON.stringify(v, null, 2) + "\n"); fs.renameSync(tmp, f); };
 const norm = s => String(s ?? "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 const today = () => new Date().toISOString().slice(0, 10);
 const loadStore = () => { const s = readJSON(F.listings, { listings: [], comments: [] }); s.listings ||= []; s.comments ||= []; return s; };
 const lastRun = () => { try { const t = fs.readFileSync(F.runs, "utf8").trim().split("\n").filter(Boolean); return t.length ? JSON.parse(t.at(-1)) : null; } catch { return null; } };
-const profile = () => { if (!fs.existsSync(F.profile)) die(`no profile at ${F.profile}. Run setup first, or point at your hunt with --dir <path> or HOME_HUNT_DIR.`); return readJSON(F.profile); };
+const profile = () => { if (!fs.existsSync(F.profile)) die(`no profile at ${F.profile}. Run setup first, or point at your hunt with --dir <path> or HERMIT_DIR.`); return readJSON(F.profile); };
 const readInput = src => { if (!src) die("give a JSON file, or - to read from stdin"); try { return JSON.parse(src === "-" ? fs.readFileSync(0, "utf8") : fs.readFileSync(src, "utf8")); } catch (e) { die(`can't read listing JSON from ${src}: ${e.message}`); } };
 
 function setPath(obj, dotted, value) {
@@ -78,6 +78,14 @@ function suggestDupes(store, only) {
   return out.sort((x, y) => y.likelihood - x.likelihood);
 }
 
+// Only changes worth telling the household about become "Updated by the scout" on the board.
+function noteChange(l, before, now = Date.now()) {
+  let what = null;
+  if (before.price && l.price && Number(l.price) !== Number(before.price)) what = Number(l.price) < Number(before.price) ? "dropped the price" : "raised the price";
+  if (!!l.taken !== !!before.taken) what = l.taken ? "marked it taken" : "marked it available again";
+  if (what) { l.lastChange = { by: "scout", at: now, what }; l.log = [...(l.log || []), l.lastChange].slice(-20); }
+}
+
 function upsert(store, incoming) {
   const now = Date.now(), res = [];
   for (const raw of [].concat(incoming)) {
@@ -85,9 +93,11 @@ function upsert(store, incoming) {
     const cur = store.listings.find(l => l.id === raw.id);
     if (cur) {
       if (raw.price && cur.price && raw.price !== cur.price) (cur.priceHistory ||= []).push({ at: today(), from: cur.price, to: raw.price });
-      deepMerge(cur, raw); cur.updatedAt = now; res.push({ id: raw.id, action: "updated" });
+      const before = { price: cur.price, taken: cur.taken };
+      deepMerge(cur, raw); cur.updatedAt = now; if (!raw.lastChange) noteChange(cur, before, now);
+      res.push({ id: raw.id, action: "updated" });
     } else {
-      const l = { status: "inbox", stage: "new", createdAt: now, updatedAt: now, ...raw };
+      const l = { status: "inbox", stage: "new", createdAt: now, updatedAt: now, addedBy: "scout", ...raw };
       store.listings.push(l); res.push({ id: raw.id, action: "added" });
     }
   }
@@ -115,7 +125,7 @@ function buildBoard({ title, mode = "snapshot" } = {}) {
     .replace("/*__SCORER__*/", () => "(function(){\n" + scorer + "\n})();")
     .replace('"__DATA__"', () => safe)
     .replace("<!--__VIEWPORT__-->", mode === "artifact" ? "" : '<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">')
-    .replace("<title>Home Hunt</title>", () => `<title>${String(title || p.title || "Home Hunt").replace(/[<&]/g, "")}</title>`);
+    .replace("<title>Hermit</title>", () => `<title>${String(title || p.title || "Hermit").replace(/[<&]/g, "")}</title>`);
 }
 
 async function probe(url) {
@@ -197,7 +207,7 @@ async function main() {
     }
     case "status": {
       const p = readJSON(F.profile, null), s = readJSON(F.sources, { sources: [] }), st = loadStore();
-      if (!p) { console.log(`No hunt found at ${DIR}. Run setup, or point at an existing hunt with --dir <path> or HOME_HUNT_DIR.`); process.exitCode = 2; break; }
+      if (!p) { console.log(`No hunt found at ${DIR}. Run setup, or point at an existing hunt with --dir <path> or HERMIT_DIR.`); process.exitCode = 2; break; }
       const by = {}; for (const l of st.listings.filter(l => !l.dupOf)) by[l.status] = (by[l.status] || 0) + 1;
       const runs = fs.existsSync(F.runs) ? fs.readFileSync(F.runs, "utf8").trim().split("\n").filter(Boolean) : [];
       const last = runs.length ? JSON.parse(runs.at(-1)) : null;
@@ -238,9 +248,9 @@ async function main() {
       console.log(JSON.stringify(r, null, 2)); break;
     }
     case "set": {
-      const id = argv.shift(); const st = loadStore(); const l = st.listings.find(x => x.id === id); if (!l) die(`no listing ${id}`);
+      const id = argv.shift(); const st = loadStore(); const l = st.listings.find(x => x.id === id); if (!l) die(`no listing ${id}`); const before = { price: l.price, taken: l.taken };
       for (const kv of argv) { const i = kv.indexOf("="); if (i < 1) die(`bad key=value: ${kv}`); const k = kv.slice(0, i), v = kv.slice(i + 1); if (k === "price" && l.price && Number(v) !== l.price) (l.priceHistory ||= []).push({ at: today(), from: l.price, to: Number(v) }); setPath(l, k, v); }
-      l.updatedAt = Date.now(); writeJSON(F.listings, st); console.log(`✓ ${id} updated`); break;
+      l.updatedAt = Date.now(); noteChange(l, before); writeJSON(F.listings, st); console.log(`✓ ${id} updated`); break;
     }
     case "asks": {
       const p = profile(), st = loadStore(), all = opt("all"); let n = 0;
@@ -267,7 +277,7 @@ async function main() {
     }
     case "serve": profile(); serve(Number(opt("port") || 4173)); break;
     case "demo": { // serve a throwaway copy so playing with the demo never edits the skill's files
-      const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "home-hunt-demo-"));
+      const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "hermit-demo-"));
       for (const f of ["profile.json", "listings.json"]) fs.copyFileSync(path.join(SKILL, "examples", "demo", f), path.join(tmp, f));
       Object.assign(F, { profile: path.join(tmp, "profile.json"), listings: path.join(tmp, "listings.json"), photos: path.join(tmp, "photos") });
       console.log("Demo with fictional data. Edits go to a temp copy: " + tmp);
@@ -296,9 +306,10 @@ async function main() {
       break;
     }
     case "docs": { // one JSON file per artifact-db document, for seeding the shared board with the artifact data tool
-      const out = path.resolve(argv[0] || path.join(DIR, "docs")), st = loadStore(), w = [];
+      const url = opt("url") || readJSON(F.sources, {}).board, out = path.resolve(argv[0] || path.join(DIR, "docs")), st = loadStore(), w = [];
       const put = (col, id, v) => { const f = path.join(out, col, id.replace(/[^\w.~:@+-]/g, "_") + ".json"); writeJSON(f, v); w.push({ op: "set", collection: col, doc_id: path.basename(f, ".json"), file_path: f }); };
       put("meta", "profile", profile()); const lr = lastRun(); if (lr) put("meta", "lastRun", lr);
+      if (typeof url === "string" && url.startsWith("https://")) put("meta", "share", { url }); // meta/members and data/users/* belong to the board: never written here
       for (const l of st.listings) put("listings", l.id, l);
       for (const c of st.comments) put("comments", c.id, c);
       writeJSON(path.join(out, "writes.json"), w);
@@ -315,7 +326,7 @@ async function main() {
       console.log(`✓ backed up to ${dst} and reset${keep ? " (profile kept)" : ""}.\nNot touched here: a scheduled scout, and a shared artifact board. Turn those off or clear them separately.`); break;
     }
     case undefined: case "help": case "--help": case "-h": console.log(USAGE); break;
-    default: die(`unknown command "${cmd}". Run: node hh.js help`);
+    default: die(`unknown command "${cmd}". Run: node hermit.js help`);
   }
 }
 main();
