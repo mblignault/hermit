@@ -53,7 +53,7 @@ h1 .mark{width:28px;height:28px;border-radius:8px;background:linear-gradient(135
 .view{flex:1;min-height:0}
 .laneTabs{display:none}
 /* Board */
-.board-wrap{overflow-x:auto;overflow-y:hidden;overscroll-behavior:contain;padding:0 max(16px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+.board-wrap{overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;padding:0 max(16px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
 .board{display:grid;grid-auto-flow:column;gap:14px;padding-top:14px;width:max-content;min-width:100%;height:100%}
 .lane{--t:#7fa6c9;background:color-mix(in srgb,var(--t) 9%,var(--mix));border:1px solid color-mix(in srgb,var(--t) 22%,var(--line));border-radius:14px;display:flex;flex-direction:column;min-height:0;overflow:hidden;width:clamp(270px,21vw,310px)}
 .lane.inbox{width:clamp(540px,40vw,660px)}
@@ -63,7 +63,7 @@ h1 .mark{width:28px;height:28px;border-radius:8px;background:linear-gradient(135
 .lane-h .dot{width:9px;height:9px;border-radius:3px;background:var(--t)}
 .lane-h .count{font:500 11.5px var(--f-mono);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:0 8px;margin-left:auto}
 .lane-hint{font-size:12px;color:var(--muted);padding:0 14px 9px}
-.lane-body{display:flex;flex-direction:column;gap:12px;padding:12px 10px 14px;min-height:0;flex:1;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;transition:background .15s}
+.lane-body{display:flex;flex-direction:column;gap:12px;padding:12px 10px 14px;min-height:0;flex:1;overflow-y:auto;overscroll-behavior-y:contain;scrollbar-width:thin;transition:background .15s}
 .lane-body>*{flex:none}.lane-body.over{background:var(--accent-soft)}
 .subs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));flex:1;min-height:0}
 .sub{display:flex;flex-direction:column;min-height:0;min-width:0}.sub+.sub{border-left:1px dashed var(--line)}
@@ -364,6 +364,17 @@ function renderBoard() {
 let drag = null;
 document.addEventListener("dragstart", e => { const c = e.target.closest?.(".card"); if (!c || !state.canWrite) return; drag = { id: c.dataset.id, target: null, timer: null }; c.classList.add("dragging"); e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", c.dataset.id); });
 document.addEventListener("dragend", () => { $$(".dragging,.linktarget,.over").forEach(x => x.classList.remove("dragging", "linktarget", "over")); if (drag) clearTimeout(drag.timer); drag = null; });
+// Sideways scrolling anywhere on the board: a horizontal swipe or Shift+wheel over a lane scrolls the board;
+// a vertical wheel over a lane header or the gaps between lanes scrolls it too. Lane bodies keep vertical wheel.
+$("#boardWrap").addEventListener("wheel", e => {
+  const wrap = e.currentTarget; if (wrap.scrollWidth <= wrap.clientWidth || e.ctrlKey) return;
+  let dx = e.deltaX, dy = e.deltaY; if (e.shiftKey && !dx) { dx = dy; dy = 0; }
+  const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? wrap.clientWidth : 1;
+  const inBody = e.target.closest?.(".lane-body");
+  const move = Math.abs(dx) > Math.abs(dy) ? dx : (!inBody ? dy : 0);
+  if (!move) return;
+  e.preventDefault(); wrap.scrollLeft += move * unit;
+}, { passive: false });
 document.addEventListener("dragover", e => {
   const body = e.target.closest?.(".lane-body"); if (!body || !drag) return; e.preventDefault();
   $$(".lane-body.over").forEach(x => x !== body && x.classList.remove("over")); body.classList.add("over");
