@@ -30,9 +30,9 @@ The shared board is a private Claude artifact, so it needs claude.ai or Claude D
 
 | Where | How |
 |---|---|
-| Claude Code (plugin) | `/plugin marketplace add mblignault/hermit` then `/plugin install hermit@hermit` |
-| Claude Code or Desktop (plain skill) | Copy `skills/hermit` into `~/.claude/skills/` |
-| claude.ai | Zip the `skills/hermit` folder (the zip should contain `hermit/SKILL.md`) and upload it under Customize → Skills. Turn on code execution. |
+| **Claude Desktop** (easiest, no code) | Customize → Plugins → **Add** → Add marketplace → Add from a repository → `mblignault/hermit`. Then install **Hermit** from it. Paid plans; it follows your account to Cowork and Claude Code. |
+| Claude Code | `/plugin marketplace add mblignault/hermit` then `/plugin install hermit@hermit` |
+| claude.ai on the web only | Download this repo (Code → Download ZIP), zip just the `skills/hermit` folder (the zip should contain `hermit/SKILL.md`) and upload it under Customize → Skills. Turn on code execution. |
 
 **2. Say** "help me find a place to live". That's it. Setup takes about 5 minutes:
 
@@ -52,6 +52,23 @@ Every question has a default, and you can say "skip" at any point. You can tune 
 > - Skipped: a great-looking place in Parkside that only allows small pets.
 
 Quiet days get one line ("Scout ran, nothing new: 3 sites, 7 areas, 42 checked"), so you always know it ran. The board shows when the last scout ran, too.
+
+## Best setup: give the hunt its own project
+
+A hunt runs for weeks. It works best when it lives in one place that remembers the board, runs the scout on its own, and that you come back to, instead of a new chat each time. This is how the original hunt was run.
+
+**In Claude Desktop (Cowork)**
+1. Install the plugin (above), open Cowork and say "help me find a place to live".
+2. When setup asks how often to scout, say daily. It creates a **Scheduled** task (left sidebar), which runs even while your computer sleeps.
+3. Invite your household to the board from its **Share** button. Every run lands on that same board.
+
+**In a Claude Code project** (claude.ai/code, or the Code tab in Desktop)
+1. Create a project called "Our home hunt" and add `mblignault/hermit` as a repository.
+2. Paste this into the project instructions:
+   > This project runs our home search with the Hermit skill at `skills/hermit` in the attached repo. Read its SKILL.md before any hunt work. Keep the hunt's workspace in project files and the board link in project memory. Always update the same shared board; never start a second one.
+3. Start a thread with "help me find a place to live". Setup adds the daily scout under the project's **Scheduled tasks**, and each run reports in the project.
+
+Either way, save the board link once in your family chat. That's the last link anyone needs to send.
 
 ## Where it works
 
