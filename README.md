@@ -150,4 +150,6 @@ npm run check   # privacy scan + tests
 npm run demo    # the demo board
 ```
 
+Contributions welcome, especially tested country packs: see [CONTRIBUTING.md](CONTRIBUTING.md).
+
 MIT licence.

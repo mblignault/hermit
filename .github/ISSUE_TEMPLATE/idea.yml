@@ -1,0 +1,9 @@
+name: Idea
+description: Something that would make the hunt easier.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would help, and why?
+    validations: { required: true }

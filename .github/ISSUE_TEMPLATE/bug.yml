@@ -1,0 +1,28 @@
+name: Something didn't work
+description: A scout, the board, scoring or setup went wrong.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: "Please leave out anything personal: real addresses, names, budgets, listing links. Describe them instead (\"a 3-bed in my top area\")."
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where were you running it?
+      options: [Claude Code (plugin), Claude Code (plain skill), claude.ai, Claude Desktop / Cowork, Other]
+    validations: { required: true }
+  - type: input
+    id: country
+    attributes:
+      label: Country
+      placeholder: e.g. GB
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations: { required: true }
+  - type: textarea
+    id: output
+    attributes:
+      label: Any error or output (remove personal details)
+      render: text

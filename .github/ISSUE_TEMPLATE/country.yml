@@ -1,0 +1,21 @@
+name: Country or listing site
+description: Add or fix a country pack, or a site Hermit should read.
+labels: [country-pack]
+body:
+  - type: input
+    id: country
+    attributes:
+      label: Country
+      placeholder: e.g. NL
+    validations: { required: true }
+  - type: textarea
+    id: sites
+    attributes:
+      label: Which sites, and did you test them?
+      description: The main portals people actually use, and whether Hermit could read them (fetch, browser, email alerts).
+    validations: { required: true }
+  - type: textarea
+    id: terms
+    attributes:
+      label: Local terms
+      description: How listings say "let agreed", "under offer" or "no pets", how rent is quoted, and anything else that differs.
